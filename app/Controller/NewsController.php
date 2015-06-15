@@ -73,7 +73,7 @@ class NewsController extends AppController {
 			'pro-choice',
 			'pro-escolha',
 			'pro-vida',
-                        'protesto',
+            'protesto',
 			'reivindica%E7%E3o',
 			'vandalismo');
     }
@@ -82,12 +82,12 @@ class NewsController extends AppController {
         return array_map('url_to_utf8', $this->load_all_keywords());
     }
     
-        public function basic_index(){
+    public function basic_index(){
 		$this->News->recursive = 0;
 		$this->set('statuses', $this->load_statuses('Todos'));
 		$this->set('sources', $this->load_sources());
-                $this->set('keywords', $this->load_all_keywords_decoded());
-        }
+            $this->set('keywords', $this->load_all_keywords_decoded());
+    }
 
 	public function index() {
 	    $this->basic_index();
@@ -247,6 +247,8 @@ class NewsController extends AppController {
 			$this->set('statuses', $this->load_statuses('-'));
 			$this->set('saved_event_groups', $this->getEventGroups($id));
             $this->set('comments', $this->Comment->find('all', $commentsConditions));
+            $this->set('actors', $this->load_actors());
+            $this->set('cities', $this->load_cities());
 		}
 	}
 	
@@ -280,5 +282,52 @@ class NewsController extends AppController {
     	
        	$this->set('response', array('success' => $success, 
        	    'news_status' => $news['NewsStatus']));
-	}	
+	}
+    
+    private function load_actors(){
+        $this->loadModel('Annotation');
+        $actors = array();
+        $raw_annotation = $this->Annotation->find('all', 
+            array('conditions' => array('Annotation.tag_id ==' => '1', 
+                                        'Annotation.value !=' => 'NA'),
+                  'fields' => array('DISTINCT Annotation.value')));
+        
+        foreach($raw_annotation as $a){
+            if(!empty($a['Annotation']['value'])){
+                if($a['Annotation']['value'][0] != '{'){
+                    $actors[] = trim($a['Annotation']['value']);
+                }
+                else{
+                    $v = json_decode($a['Annotation']['value']);
+                    if(!empty($v->actors)){
+                        $actors[] = trim($v->actors);
+                    }
+                }
+            }
+        }
+        sort($actors);
+        return $actors;
+    }
+    
+    private function load_cities(){
+        $this->loadModel('Annotation');
+        $cities = array();
+        $raw_annotation = $this->Annotation->find('all', 
+            array('conditions' => array('Annotation.tag_id ==' => '2', 
+                                        'Annotation.value !=' => 'NA'),
+                  'fields' => array('DISTINCT Annotation.value')));
+        
+        foreach($raw_annotation as $a){
+            if(!empty($a['Annotation']['value'])){
+                    $cities[] = trim($a['Annotation']['value']);
+            }
+        }
+        sort($cities);
+        return $cities;
+    }
+    
+    public function get_actors(){
+        $this->layout = "ajax"; 
+        $this->set('actors', $this->load_actors());      
+    }
 }

@@ -33,6 +33,8 @@ var SERIALIZED_HIGHLIGHTS =
 var COMMENTS  = <?php echo json_encode($comments); ?>;
 var NEWS_DATE = '<?php echo $news['News']['date']; ?>';
 var highlightColors = ['#FFFF7B', 'lightgreen', 'lightblue', 'lightpink', 'lightsteelblue', 'lightgray'];
+var ACTORS = <?php echo json_encode($actors); ?>;
+var CITIES = <?php echo json_encode($cities); ?>;
 
 for(var i = 0; i < TAGS.length; i++){
     TAG_NAMES[TAGS[i].Tag.tag_id] = TAGS[i].Tag.name;
@@ -56,9 +58,9 @@ $(document).ready(function() {
 	
 	fillEventGroups(savedEventGroups);
     
-    //setInterval(function(){
-		//saveEventGroups();
-	//}, 60000);
+    setInterval(function(){
+		saveEventGroups();
+	}, 60000);
     
     $('#texto-principal img').load(function(){
 	    $(this).css('width', '100%').css('height', 'auto');
@@ -352,20 +354,35 @@ function createInputProperty(text, selectedTag){
             input = createInputCasualties(text);
             break; 
             
+        case 'ATORES':
+			input = createInputAtores(text);
+			break;
+			
         default:
-            input = createStandardInputProperty(text);
+			if(selectedTag == 2){ // Medida emergencial!
+				input = createStandardInputProperty(
+							text, {autocomplete:CITIES});
+			}
+			else{
+				input = createStandardInputProperty(text);
+			}
+            break;
     }
     
     return input;
 }
 
-function createStandardInputProperty(text){
+function createStandardInputProperty(text, options){
     var inputProperty = $("<input>");
 	inputProperty.css("width", "100%");
 	inputProperty.css("font-size", "10pt")
 	inputProperty.val(text);
 	inputProperty.addClass('annotation-value');
 	inputProperty.focus();
+	
+	if(options && options.autocomplete){
+		inputProperty.autocomplete({source: options.autocomplete});
+	}
 	return inputProperty;
 }
 
@@ -475,6 +492,7 @@ function createInputConflictType(data){
     var labelManCid = 'Manifestantes x Cidadãos';
     var labelPolJor = 'Polícia x Jornalistas';
     var labelPolCid = 'Polícia x Cidadãos';
+    var labelNoConflict = 'Não houve conflito';
     
     var cbManMan = $('<input>').prop('type', 'checkbox').addClass('annotation-man-man');
     var cbManPol = $('<input>').prop('type', 'checkbox').addClass('annotation-man-pol');
@@ -482,6 +500,7 @@ function createInputConflictType(data){
     var cbManCid = $('<input>').prop('type', 'checkbox').addClass('annotation-man-cid');
     var cbPolJor = $('<input>').prop('type', 'checkbox').addClass('annotation-pol-jor');
     var cbPolCid = $('<input>').prop('type', 'checkbox').addClass('annotation-pol-cid');
+    var cbNoConflict = $('<input>').prop('type', 'checkbox').addClass('annotation-no-conflict');
     
     if(options['man-man']){
         cbManMan.prop('checked', true);
@@ -501,8 +520,16 @@ function createInputConflictType(data){
     if(options['pol-cid']){
         cbPolCid.prop('checked', true);
     }
+    if(options['no-conflict']){
+        cbNoConflict.prop('checked', true);
+    }
     
     var table = $('<table>').css("font-size", "8pt");
+    
+    table.append($('<tr>')
+        .append($('<td>').append(cbNoConflict))
+        .append($('<td>').append(labelNoConflict)));
+    
     table.append($('<tr>')
         .append($('<td>').append(cbManMan))
         .append($('<td>').append(labelManMan)));
@@ -526,6 +553,7 @@ function createInputConflictType(data){
     table.append($('<tr>')
         .append($('<td>').append(cbPolCid))
         .append($('<td>').append(labelPolCid)));
+       
     
     return table;
 }
@@ -553,6 +581,38 @@ function createInputCasualties(data){
     table.append($('<tr>')
         .append($('<td>').append(cbCasualties))
         .append($('<td>').append(labelCasualties)));
+    
+    return table;
+}
+
+//FIXME: Urgent: create a generic framework for editing this!
+function createInputAtores(data){
+    var options = parseJSONOrEmptyObject(data);
+    var labelAssociation = 'É associação';
+    var cbAssociation = $('<input>').prop('type', 'checkbox').addClass('annotation-association');
+    var txtActors = $('<input>').addClass('annotation-actors');
+    
+    txtActors.autocomplete({
+		source: ACTORS
+	});
+    
+    if(options['association']){
+        cbAssociation.prop('checked', true);
+    }
+    
+    if(options['actors']){
+        txtActors.val(options.actors);
+        txtActors.focus();
+    }
+    
+    var table = $('<table>').css("font-size", "8pt");
+    
+    table.append($('<tr>')
+        .append($('<td>').prop('colspan', '2').append(txtActors)));
+        
+    table.append($('<tr>')
+        .append($('<td>').append(cbAssociation))
+        .append($('<td>').append(labelAssociation)));
     
     return table;
 }
@@ -588,7 +648,8 @@ function getAnnotationValue(row, selectedTag){
                 'man-jor' : $('.annotation-man-jor', row).is(':checked'),
                 'man-cid' : $('.annotation-man-cid', row).is(':checked'),
                 'pol-jor' : $('.annotation-pol-jor', row).is(':checked'),
-                'pol-cid' : $('.annotation-pol-cid', row).is(':checked')
+                'pol-cid' : $('.annotation-pol-cid', row).is(':checked'),
+                'no-conflict' : $('.annotation-no-conflict', row).is(':checked')
             });
             break;
             
@@ -603,6 +664,13 @@ function getAnnotationValue(row, selectedTag){
             value = JSON.stringify({
                 'injured'    : $('.annotation-injured', row).val(),
                 'casualties' : $('.annotation-casualties', row).is(':checked'),
+            });
+            break;
+            
+        case 'ATORES':
+            value = JSON.stringify({
+                'actors'      : $('.annotation-actors',       row).val(),
+                'association' : $('.annotation-association', row).is(':checked'),
             });
             break;
                 
