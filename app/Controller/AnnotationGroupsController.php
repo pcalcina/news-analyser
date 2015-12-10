@@ -120,8 +120,8 @@ class AnnotationGroupsController extends AppController {
 	}
     
     public function groups() {
-        $this->AnnotationGroup->recursive = 0;
-		$this->set('annotationGroups', $this->Paginator->paginate());
+        $this->AnnotationGroup->recursive = 0;        
+		$this->set('groups', $this->AnnotationGroup->aggregate_events());
 	}
     
 }
