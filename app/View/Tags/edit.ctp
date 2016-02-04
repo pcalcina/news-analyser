@@ -3,9 +3,12 @@
 	<fieldset>
 		<legend><?php echo __('Edit Tag'); ?></legend>
 	<?php
+		echo $this->Form->input('type');
+		echo $this->Form->input('example');
 		echo $this->Form->input('tag_id');
 		echo $this->Form->input('name');
 		echo $this->Form->input('description');
+		echo $this->Form->input('tag_type_id');
 	?>
 	</fieldset>
 <?php echo $this->Form->end(__('Submit')); ?>

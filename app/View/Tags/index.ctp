@@ -2,16 +2,22 @@
 	<h2><?php echo __('Tags'); ?></h2>
 	<table cellpadding="0" cellspacing="0">
 	<tr>
+			<th><?php echo $this->Paginator->sort('type'); ?></th>
+			<th><?php echo $this->Paginator->sort('example'); ?></th>
 			<th><?php echo $this->Paginator->sort('tag_id'); ?></th>
 			<th><?php echo $this->Paginator->sort('name'); ?></th>
 			<th><?php echo $this->Paginator->sort('description'); ?></th>
+			<th><?php echo $this->Paginator->sort('tag_type_id'); ?></th>
 			<th class="actions"><?php echo __('Actions'); ?></th>
 	</tr>
 	<?php foreach ($tags as $tag): ?>
 	<tr>
+		<td><?php echo h($tag['Tag']['type']); ?>&nbsp;</td>
+		<td><?php echo h($tag['Tag']['example']); ?>&nbsp;</td>
 		<td><?php echo h($tag['Tag']['tag_id']); ?>&nbsp;</td>
 		<td><?php echo h($tag['Tag']['name']); ?>&nbsp;</td>
 		<td><?php echo h($tag['Tag']['description']); ?>&nbsp;</td>
+		<td><?php echo h($tag['Tag']['tag_type_id']); ?>&nbsp;</td>
 		<td class="actions">
 			<?php echo $this->Html->link(__('View'), array('action' => 'view', $tag['Tag']['tag_id'])); ?>
 			<?php echo $this->Html->link(__('Edit'), array('action' => 'edit', $tag['Tag']['tag_id'])); ?>

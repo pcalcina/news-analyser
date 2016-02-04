@@ -14,7 +14,7 @@ class TagsController extends AppController {
  * @var array
  */
 	public $components = array('Paginator');
-	
+
 /**
  * index method
  *
@@ -22,9 +22,6 @@ class TagsController extends AppController {
  */
 	public function index() {
 		$this->Tag->recursive = 0;
-		$this->Paginator->settings = array(
-            'order' => array('Tagxxxs.name' => 'asc')
-        );
 		$this->set('tags', $this->Paginator->paginate());
 	}
 
@@ -103,11 +100,4 @@ class TagsController extends AppController {
 			$this->Session->setFlash(__('The tag could not be deleted. Please, try again.'));
 		}
 		return $this->redirect(array('action' => 'index'));
-	}
-
-    public function description(){
-        $this->loadModel('Tag');
-	    $this->set('tags', $this->Tag->find('all', array('order' => 'tag.name')));
-    }	
-	
-}
+	}}

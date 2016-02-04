@@ -1,21 +1,34 @@
 <div class="tags view">
 <h2><?php echo __('Tag'); ?></h2>
 	<dl>
+		<dt><?php echo __('Type'); ?></dt>
+		<dd>
+			<?php echo h($tag['Tag']['type']); ?>
+			&nbsp;
+		</dd>
+		<dt><?php echo __('Example'); ?></dt>
+		<dd>
+			<?php echo h($tag['Tag']['example']); ?>
+			&nbsp;
+		</dd>
 		<dt><?php echo __('Tag Id'); ?></dt>
 		<dd>
 			<?php echo h($tag['Tag']['tag_id']); ?>
 			&nbsp;
 		</dd>
-		
 		<dt><?php echo __('Name'); ?></dt>
 		<dd>
 			<?php echo h($tag['Tag']['name']); ?>
 			&nbsp;
 		</dd>
-		
 		<dt><?php echo __('Description'); ?></dt>
 		<dd>
 			<?php echo h($tag['Tag']['description']); ?>
+			&nbsp;
+		</dd>
+		<dt><?php echo __('Tag Type Id'); ?></dt>
+		<dd>
+			<?php echo h($tag['Tag']['tag_type_id']); ?>
 			&nbsp;
 		</dd>
 	</dl>
