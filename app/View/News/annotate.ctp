@@ -959,7 +959,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                 </span>
             </td>
 
-            <td id='event-groups' style="width:*; vertical-align:top; text-align: center">
+            <td id='event-groups' style='width:*; vertical-align:top; text-align: center'>
                 <span class='actions' style='text-align:center; padding-bottom:12px'>
                     <a href='javascript:createEventGroup();'> + Evento</a> 
                     &nbsp;
