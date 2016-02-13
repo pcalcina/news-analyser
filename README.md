@@ -25,3 +25,9 @@ git clone https://github.com/pcalmtools/news-analyser.git
 ```bash
 chmod a+rw app/tmp
 ```
+5. Download database file
+```bash
+cd app/webroot && wget http://www.ime.usp.br/~pcalcina/protestos.sqlite
+```
+
+6. Make sure protestos.sqlite has *read* and *write* permissions (`chmod a+rw protestos.sqlite`)
