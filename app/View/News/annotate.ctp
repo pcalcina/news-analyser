@@ -360,6 +360,10 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                 input = createInputAtores(text);
                 break;
 
+            case 'TEMA':
+                input = createInputTema(text);
+                break;
+
             default:
                 if (selectedTag == 2) { // Medida emergencial!
                     input = createStandardInputProperty(
@@ -448,12 +452,15 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     function createInputAction(data) {
         var options = parseJSONOrEmptyObject(data);
         var table = $('<table>').css("font-size", "8pt");
-        var labelAction = 'Ação';
+        var labelAction = 'Verbo';
         var labelObject = 'Objeto';
+        var labelInstrument = 'Instrumento';
         var inputObject = $('<input>').css('min-width', '80px').css('width', '100%')
                 .addClass('annotation-action-object');
         var inputAction = $('<input>').css('min-width', '80px')
                 .addClass('annotation-action-action');
+        var inputInstrument = $('<input>').css('min-width', '80px')
+                .addClass('annotation-action-instrument');
 
         if (options.object) {
             inputObject.val(options.object);
@@ -462,6 +469,10 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
 
         if (options.action) {
             inputAction.val(options.action);
+        }
+
+        if (options.instrument) {
+            inputInstrument.val(options.instrument)
         }
 
         table.append($('<tr>')
@@ -473,6 +484,11 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                 .append($('<td>')
                         .append(labelObject))
                 .append($('<td>').addClass('inner-td').append(inputAction)));
+
+        table.append($('<tr>')
+                .append($('<td>')
+                        .append(labelInstrument))
+                .append($('<td>').addClass('inner-td').append(inputInstrument)));
 
         return table;
     }
@@ -619,6 +635,54 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         return table;
     }
 
+    //FIXME: Urgent: create a generic framework for editing this!
+    function createInputTema(data) {
+        var options = parseJSONOrEmptyObject(data);
+        var radioName = 'annotation-tema-a-favor-' + new Date().getTime();
+
+        var txtTema = $('<input>').addClass('annotation-tema');
+        var lblAFavor = 'A favor';
+        var lblContra = 'Contra';
+        var rbTemaAFavor = $('<input>')
+                .prop('type', 'radio')
+                .addClass('annotation-tema-a-favor')
+                .prop('name', radioName)
+                .val(true);
+        var rbTemaContra = $('<input>')
+                .prop('type', 'radio')
+                .addClass('annotation-tema-a-favor')
+                .prop('name', radioName)
+                .val(false);
+
+        if (options['tema']) {
+            txtTema.val(options['tema']);
+        }
+
+        if (typeof options['a-favor'] !== 'undefined') {
+            // Change this weird code
+            if (options['a-favor'] == 'true') {
+                rbTemaAFavor.prop('checked', true);
+            }
+            else {
+                rbTemaContra.prop('checked', true);
+            }
+        }
+
+        var table = $('<table>').css("font-size", "8pt");
+
+        table.append($('<tr>')
+                .append($('<td>').prop('colspan', '4').append(txtTema)));
+
+        table.append($('<tr>')
+                .append($('<td>').append(rbTemaAFavor).css('width', '10px'))
+                .append($('<td>').append(lblAFavor).css('vertical-align', 'middle'))
+                .append($('<td>').append(rbTemaContra).css('width', '10px'))
+                .append($('<td>').append(lblContra).css('vertical-align', 'middle')));
+
+        return table;
+    }
+
+
     function getSelectedText() {
         if (window.getSelection) {
             return window.getSelection().toString();
@@ -658,7 +722,8 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
             case 'ACTION':
                 value = JSON.stringify({
                     'object': $('.annotation-action-object', row).val(),
-                    'action': $('.annotation-action-action', row).val()
+                    'action': $('.annotation-action-action', row).val(),
+                    'instrument': $('.annotation-action-instrument', row).val()
                 });
                 break;
 
@@ -666,6 +731,14 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                 value = JSON.stringify({
                     'injured': $('.annotation-injured', row).val(),
                     'casualties': $('.annotation-casualties', row).is(':checked'),
+                });
+                break;
+
+            case 'TEMA':
+                console.log($('input:radio.annotation-tema-a-favor', row));
+                value = JSON.stringify({
+                    'tema': $('.annotation-tema', row).val(),
+                    'a-favor': $('input:radio.annotation-tema-a-favor:checked', row).val()
                 });
                 break;
 
@@ -959,7 +1032,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                 </span>
             </td>
 
-            <td id='event-groups' style='width:*; vertical-align:top; text-align: center'>
+            <td id='event-groups' style='vertical-align:top; text-align: center'>
                 <span class='actions' style='text-align:center; padding-bottom:12px'>
                     <a href='javascript:createEventGroup();'> + Evento</a> 
                     &nbsp;
@@ -987,7 +1060,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                                     &nbsp; &nbsp; &nbsp;</div>
                             </td>
 
-                            <td style='text-align:center;vertical-alightment:center;width:*'>
+                            <td style='text-align:center;vertical-alightment:center;width:auto'>
                                 <select class='event-group-select'>
                                     <option value=''></option>
                                 <?php foreach ($events as $event): ?>
