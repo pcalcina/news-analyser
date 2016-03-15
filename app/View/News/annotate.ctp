@@ -12,8 +12,14 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
 
 <script>
     var attributes = {};
-    var tagTypes = <?php echo json_encode($tag_types); ?>;
+    var tagTypes = <?php echo json_encode($tagTypes); ?>;
     var TAGS = <?php echo json_encode($tags); ?>;
+    var TagsById = <?php echo json_encode($tagsById); ?>;
+    var TagsTypesById = <?php echo json_encode($tagTypesById); ?>;
+    var TextTypesById = <?php echo json_encode($textTypesById); ?>;
+    var TagDetail = <?php echo json_encode($tagsDetailById); ?>;
+     
+      
     var TAG_NAMES = {};
     var NEWS_ID = '<?php echo $news['News']['news_id'] ?>';
     var USER_ID = '<?php echo $this->Session->read('Auth.User.id') ?>';
@@ -60,9 +66,9 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
 
         fillEventGroups(savedEventGroups);
 
-        setInterval(function () {
-            saveEventGroups();
-        }, 60000);
+        //setInterval(function () {
+            //saveEventGroups();
+        //}, 60000);
 
         $('#texto-principal img').load(function () {
             $(this).css('width', '100%').css('height', 'auto');
@@ -72,12 +78,12 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
 
         showComments(COMMENTS);
 
-        console.log("<parsing>");
+        //console.log("<parsing>");
         if (SERIALIZED_HIGHLIGHTS) {
             $('#texto-principal').getHighlighter()
                     .deserializeHighlights(SERIALIZED_HIGHLIGHTS);
         }
-        console.log("</parsing>");
+        //console.log("</parsing>");
     });
 
     function activateCommentButton() {
@@ -142,8 +148,8 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     function addSelectedTagToCurrentRow(options) {
         var selectedTag = $("#options-tags").select2("data");
         options.selectedTag = selectedTag.id;
-        console.log("Options: ");
-        console.log(options);
+        //console.log("Options: ");
+        //console.log(options);
         options.table = $('.event-group-container-selected .event-group-annotations ');
         addInputProperty(options);
         $("#addTagRow").dialog("close");
@@ -248,7 +254,10 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     }
 
     function addInputProperty(options) {
+        //console.log(options);
         options = normalizeInputPropertyOptions(options);
+      
+        
         var row;
         var rowClass = "TAG-" + options.selectedTag;
 
@@ -266,8 +275,9 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         }
         else {
             row = options.table.find('>tr.' + rowClass).first();
-
-            console.log(options);
+            
+            //console.log("/////////");
+            //console.log(row.data('validValue'));
 
             if (row.data('validValue')) {
                 options.forceAdd = false;
@@ -279,7 +289,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                 newRow.data('selectedTag', row.data('selectedTag'));
                 newRow.removeClass(rowClass);
                 newRow.find('>td.value').empty().append(
-                        createInputProperty(options.text, options.selectedTag));
+                        createInputProperty(options.text, options.selectedTag,options.annotationId));
 
                 if (row.data('clones').length == 0) {
                     newRow.insertAfter(row);
@@ -317,7 +327,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                     }
                 });
                 addTagRowToTable(options,
-                        createInputProperty(options.text, options.selectedTag),
+                        createInputProperty(options.text, options.selectedTag,options.annotationId),
                         btnRemove,
                         row,
                         options.table);
@@ -331,11 +341,103 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
 
         options.text = '';
     }
+    
+    
+    function addInputPropertyNew(annotation,options) {
+        //console.log(options);
+        options = normalizeInputPropertyOptions(options);
+      
+        
+        var row;
+        var rowClass = "TAG-" + options.selectedTag;
 
-    function createInputProperty(text, selectedTag) {
+        if (options.emptyProperty) {
+            row = $("<tr>").addClass(rowClass);
+            row.data('selectedTag', options.selectedTag);
+            row.data('validValue', false);
+            var tdLabel = createTdLabel(options);
+            var tdValue = createTdValue(options);
+            var tdChange = createTdChange(options);
+            row.append(tdLabel)
+                    .append(tdValue)
+                    .append(tdChange);
+            options.table.append(row);
+        }
+        else {
+            row = options.table.find('>tr.' + rowClass).first();
+            
+            //console.log("/////////");
+            //console.log(row.data('validValue'));
+
+            if (row.data('validValue')) {
+                options.forceAdd = false;
+                var newRow = row.clone();
+                newRow.find('>td.label')
+                        .html('<b>' + TAG_NAMES[options.selectedTag] + '</b>');
+                newRow.find('.btnRemove').remove();
+                newRow.data('validValue', true);
+                newRow.data('selectedTag', row.data('selectedTag'));
+                newRow.removeClass(rowClass);
+                newRow.find('>td.value').empty().append(
+                        createInputPropertyNew(annotation,options.text, options.selectedTag,options.annotationId));
+
+                if (row.data('clones').length == 0) {
+                    newRow.insertAfter(row);
+                }
+                else {
+                    newRow.insertAfter(row.data('clones').slice(-1)[0]);
+                }
+
+                row.data('clones').push(newRow);
+
+                if (options.annotationId) {
+                    newRow.data('annotationId', options.annotationId);
+                }
+            }
+            else {
+                row.data('validValue', true);
+                row.data('clones', []);
+
+                var btnRemove = createBtnRemoveInputProperty(options);
+                btnRemove.addClass('btnRemove');
+                btnRemove.click(function () {
+
+
+                    if (row.data('clones').length == 0) {
+                        row.find('.label').replaceWith(createTdLabel(options));
+                        row.find('.value').replaceWith(createTdValue(options));
+                        row.find('.change').replaceWith(createTdChange(options));
+                        row.data('validValue', false);
+                        removeAnnotation(row);
+                    }
+                    else {
+                        var oldRow = row.data('clones').pop();
+                        removeAnnotation(oldRow);
+                        oldRow.remove();
+                    }
+                });
+                addTagRowToTable(options,
+                        createInputPropertyNew(annotation,options.text, options.selectedTag,options.annotationId),
+                        btnRemove,
+                        row,
+                        options.table);
+
+                if (options.annotationId) {
+                    row.data('annotationId', options.annotationId);
+                    options.annotationId = null;
+                }
+            }
+        }
+
+        options.text = '';
+    }
+    
+
+    function createInputProperty( text, selectedTag, selectedAnnotation) {
+  
         var input;
 
-        switch (tagTypes[selectedTag]) {
+        switch ('tagTypes[selectedTag]') {
             case 'NUMERO_MANIFESTANTES':
                 input = createInputNumberOfManifestants(text);
                 break;
@@ -366,18 +468,175 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
 
             default:
                 if (selectedTag == 2) { // Medida emergencial!
+                     
                     input = createStandardInputProperty(
                             text, {autocomplete: CITIES});
                 }
                 else {
                     input = createStandardInputProperty(text);
+                    //console.log("ddsdsd");
                 }
+                 
                 break;
         }
 
         return input;
     }
+    
+    function createInputPropertyNew(annotation, text, selectedTag, selectedAnnotation) {
+        var table = $('<table>').css("font-size", "8pt");
+ 
+        if(annotation.AnnotationDetail)//Tiene AnnotationDetail
+        { 
+            
+            $(annotation.AnnotationDetail).each(function(i, annotationDetail) 
+            {
+                var currentTagDetail = TagDetail[annotationDetail.tag_detail_id];
+                var currentTagType = TagsTypesById[currentTagDetail.TagDetail.tag_type_id];  
+                var value = annotationDetail.value;
+                var nameClass = annotationDetail.annotation_detail_id + "-" + currentTagDetail.TagDetail.tag_type_id;
+                var tr; 
+                
+                switch (currentTagType.TagType.name) {
+                    case "TextBox":
+                        typeText =TextTypesById[currentTagDetail.TagDetail.text_type_id].TextType.name;
+                        tr = createInputTextBox(value,typeText,nameClass);
+                        break;
+                    case "CheckBox":
+                        tr = createInputCheckBox(currentTagDetail.TagDetail.title, value, nameClass);
+                        break;
+                    case "RadioBox":
+                        tr = createInputRadioBox(currentTagDetail.TagDetail.title, value, selectedAnnotation,annotation.tag_id, nameClass);
+                        break;
+                    case "Labelled TextBox":
+                        tr = createInputLabelledTextBox(currentTagDetail.TagDetail.title,value, nameClass);
+                        break;    
+                    default: 
+                        createInputTextBox(value,"Text",nameClass);
+                        break;
+                }
+                table.append(tr);
+                
+            }); 
+            
+        }
+        else
+        {
+            //No tiene AnnotationDetail
+            //console.log(selectedAnnotation);
+        }
+        
+ 
+        var input;
 
+        switch ('tagTypes[selectedTag]') {
+            case 'NUMERO_MANIFESTANTES':
+                input = createInputNumberOfManifestants(text);
+                break;
+
+            case 'CONFLITO_MANIFESTANTES':
+                input = createInputConflictType(text);
+                break;
+
+            case 'DATA':
+                input = createInputDate(text);
+                break;
+
+            case 'ACTION':
+                input = createInputAction(text);
+                break;
+
+            case 'CASUALTIES':
+                input = createInputCasualties(text);
+                break;
+
+            case 'ATORES':
+                input = createInputAtores(text);
+                break;
+
+            case 'TEMA':
+                input = createInputTema(text);
+                break;
+
+            default:
+                if (selectedTag == 2) { // Medida emergencial!
+                     
+                    input = createStandardInputProperty(
+                            text, {autocomplete: CITIES});
+                }
+                else {
+                    input = createStandardInputProperty(text);
+                    //console.log("ddsdsd");
+                }
+                 
+                break;
+        }
+
+        return table;
+    }
+    
+    function addNumberOnlyRestriction(input){
+        input.on('keyup', function(){           
+            var v = this.value;
+            if($.isNumeric(v) === false){
+                this.value = this.value.slice(0,-1);
+            }
+        });
+    }
+    
+    function  createInputTextBox(value, typeText, nameClass)//Ejemplo typeText Number, Text, etc
+    {
+        var inputTextBox = $('<input>').addClass(nameClass).val(value); 
+        inputTextBox = addNumberOnlyRestriction(inputTextBox);
+            
+        var tr = $('<tr>').append($('<td>').prop('colspan', '2').append(inputTextBox)); 
+        return  tr;
+    }
+    
+    function  createInputCheckBox(title, value,nameClass){
+ 
+        var labelAssociation = title;
+        var cbAssociation = $('<input>').prop('type', 'checkbox').addClass(nameClass);
+ 
+        if (value) { 
+            cbAssociation.prop('checked', true); 
+        }
+ 
+        var tr = $('<tr>')
+                .append($('<td>').append(cbAssociation))
+                .append($('<td>').append(labelAssociation)); 
+ 
+        return tr;
+    }
+    
+    function createInputRadioBox(title, value, annotationId, tagId, nameClass){
+ 
+        var radioName = annotationId+"-"+tagId;
+   
+        var radioBox = $('<input>')
+                .prop('type', 'radio') 
+                .prop('name', radioName)
+                .addClass(nameClass)
+                .val(value);
+  
+        var tr = $('<tr>')
+                .append($('<td>').append(radioBox).css('width', '10px'))
+                .append($('<td>').append(title).css('vertical-align', 'middle'));        
+ 
+        return tr;
+    }
+    
+    function createInputLabelledTextBox(title, value, nameClass ){
+ 
+        var input = $('<input>').css('min-width', '20px').addClass(nameClass).val(value);
+       
+        var tr = $('<tr>')
+                .append($('<td>').append(title))
+                .append($('<td>').addClass('inner-td').append(input));
+        
+        return tr;
+    }
+    
     function createStandardInputProperty(text, options) {
         var inputProperty = $("<input>");
         inputProperty.css("width", "100%");
@@ -389,6 +648,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         if (options && options.autocomplete) {
             inputProperty.autocomplete({source: options.autocomplete});
         }
+        //console.log(inputProperty);
         return inputProperty;
     }
 
@@ -609,7 +869,9 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         var labelAssociation = 'É associação';
         var cbAssociation = $('<input>').prop('type', 'checkbox').addClass('annotation-association');
         var txtActors = $('<input>').addClass('annotation-actors');
-
+        
+       
+        
         txtActors.autocomplete({
             source: ACTORS
         });
@@ -698,7 +960,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     function getAnnotationValue(row, selectedTag) {
         var value;
 
-        switch (tagTypes[selectedTag]) {
+        switch ('tagTypes[selectedTag]') {
             case 'NUMERO_MANIFESTANTES':
                 value = JSON.stringify({
                     'policia': $('.annotation-quantity-police', row).val(),
@@ -735,7 +997,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                 break;
 
             case 'TEMA':
-                console.log($('input:radio.annotation-tema-a-favor', row));
+                //console.log($('input:radio.annotation-tema-a-favor', row));
                 value = JSON.stringify({
                     'tema': $('.annotation-tema', row).val(),
                     'a-favor': $('input:radio.annotation-tema-a-favor:checked', row).val()
@@ -760,7 +1022,54 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     function getAnnotations(container) {
         var annotations = [];
         container.find('>tr').each(function (i, row) {
-
+                
+            if ($(row).data('validValue')) {
+                
+             
+                annotations.push({
+                    news_id: NEWS_ID,
+                    tag_id: $(row).data('selectedTag'),
+                    //value: getAnnotationValue(row, $(row).data('selectedTag')),
+                    value: "VALUE",
+                    annotation_id: $(row).data('annotationId')
+                });
+            }
+        });
+        return annotations;
+    }
+    
+    function getAnnotationsDetail(container) {
+        var annotations = [];
+        container.find('>tr').each(function (i, row) {
+            
+        if( $(row).data('selectedTag') == 1 ){
+            
+            console.log("Printing table content");
+                 
+//                $($(row).find('>table')).find('>tr').each(function (j, row2) {
+//                     console.log(row2);
+//                });
+             
+             
+            // console.log(row); 
+            $(row).find(' table>tbody>tr input').each(function (j, detailRow) {
+                console.log(detailRow);
+                
+                var inputType = $(detailRow).prop('type');
+                console.log("inputType = " + inputType);
+                
+                switch(inputType){
+                    case 'radio':
+                        console.log("RADIO");
+                        break;
+                }
+             });
+                    
+            console.log("Print done");
+        }
+         
+        
+        
             if ($(row).data('validValue')) {
                 annotations.push({
                     news_id: NEWS_ID,
@@ -772,23 +1081,30 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         });
         return annotations;
     }
+    
 
     function saveEventGroups() {
         $('#message-saving').show();
         var groups = [];
 
         $('.event-group-container').each(function (i, container) {
+            //console.log("container");
+            //console.log(container);
+            //console.log("container");
+            
             groups.push({
                 event_id: $(container).find('.event-group-select').select2('val'),
                 group_id: $(container).find('.event-group-id').val(),
                 annotations: getAnnotations(
-                        $(container).find('.event-group-annotations'))
+                        $(container).find('.event-group-annotations')),
+                annotationsDetail: getAnnotationsDetail(
+                         $(container).find('.event-group-annotations'))
             });
         });
 
         var highlights = $('#texto-principal').getHighlighter().serializeHighlights();
 
-        console.log(groups);
+        //console.log(groups);
 
         $.post(
                 URL_SAVE_ANNOTATIONS,
@@ -798,13 +1114,14 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         function (groups) {
             $('.event-group-container').remove();
             $('#message-saving').hide();
-            fillEventGroups(groups);
+             fillEventGroups(groups);
         },
                 'json'
                 );
     }
 
     function fillEventGroups(groups) {
+        
         for (var i in groups) {
             createEventGroup(groups[i]);
         }
@@ -867,18 +1184,20 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                     .css('background-color');
             $('#texto-principal').getHighlighter().setColor(color);
         });
-
+         
+         
         $(TAGS).each(function (i, tag) {
+             
             addInputProperty({
                 table: $('.event-group-annotations', container),
                 selectedTag: tag.Tag.tag_id,
                 emptyProperty: true
                         //,selectedTagName: tag.Tag.name
             });
+            
         });
 
-        container.click();
-
+        
         if (group) {
             $('.event-group-select', container)
                     .select2('val', group.AnnotationGroup.event_id);
@@ -887,11 +1206,16 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
 
             for (var i in group.Annotation) {
                 var annotation = group.Annotation[i];
-
-                addInputProperty({text: annotation.value,
+                 
+                addInputPropertyNew(annotation,{text: annotation.value,
                     selectedTag: annotation.tag_id,
                     annotationId: annotation.annotation_id,
                     table: $('.event-group-annotations', container)});
+                /*addInputProperty({text: annotation.value,
+                    selectedTag: annotation.tag_id,
+                    annotationId: annotation.annotation_id,
+                    table: $('.event-group-annotations', container)});*/
+                 
             }
         }
     }

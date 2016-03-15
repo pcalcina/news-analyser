@@ -199,19 +199,47 @@ class NewsController extends AppController {
         }
     }
 
-    protected function getTagTypes($tags) {
-        $tagTypes = array();
-        foreach ($tags as $tag) {
-            $tagTypes[$tag['Tag']['tag_id']] = $tag['Tag']['type'];
-        }
-        return $tagTypes;
-    }
 
-    protected function getEventGroups($id) {
+    protected function getTagsById ($tags) {
+        $tagsById = array();
+        foreach ($tags as $tag) {
+            $tagsById[$tag['Tag']['tag_id']] = $tag;
+        }
+        return $tagsById;
+    }
+    
+    protected function getTagsDetailById ($tagsDetail) {
+        $tagsDetailById = array();
+        foreach ($tagsDetail as $tagDetail) {
+            $tagsDetailById[$tagDetail['TagDetail']['tag_detail_id']] = $tagDetail;
+        }
+        return $tagsDetailById;
+    }
+    
+    protected function getTagsTypesById ($tagTypes) {
+        $tagsTypesById = array();
+        foreach ($tagTypes as $tagType) {
+            $tagsTypesById[$tagType['TagType']['tag_type_id']] = $tagType;
+        }
+        return $tagsTypesById;
+    }
+     
+    protected function getTextTypesById ($textTypes) {
+        $textTypesById = array();
+        foreach ($textTypes as $textType) {
+            $textTypesById[$textType['TextType']['text_type_id']] = $textType;
+        }
+        return $textTypesById;
+    }
+    
+    protected function getEventGroups($id) { 
         $this->loadModel('AnnotationGroup');
-        $conditions = array('conditions' =>
-            array('AnnotationGroup.news_id = ' => $id));
-        return $this->AnnotationGroup->find('all', $conditions);
+        $this->loadModel('Annotation');
+        $this->loadModel('AnnotationDetail'); 
+   
+        return $this->AnnotationGroup->find('all', 
+                 array('conditions' => array('AnnotationGroup.news_id' => $id),                   
+                    'contain' => array('Annotation' => array('AnnotationDetail'))));
     }
 
     public function annotate($id = null) {
@@ -225,18 +253,37 @@ class NewsController extends AppController {
             $this->loadModel('Annotation');
             $this->loadModel('Event');
             $this->loadModel('Comment');
-
+            $this->loadModel('TagType');
+            $this->loadModel('TextType');
+            $this->loadModel('TagDetail'); 
+            
             $optionsAnnotations = array('conditions' => array('Annotation.news_id' => $id));
             $optionsNews = array('conditions' => array('News.' . $this->News->primaryKey => $id));
             $events = $this->Event->find('all', array('order' => 'event.name'));
 
-            $tags = $this->Tag->find('all', array('order' => 'tag.name'));
+            //$tags = $this->Tag->find('all', array('order' => 'tag.name'));
+    
+   
+            $tags = $this->Tag->find('all', 
+                 array('contain' => array('TagDetail' ),'order' => 'tag.name'));
+            
+            $annotattes = $this->Annotation->find('all', array('conditions'=> array('Annotation. news_id =' => 223)));
+            
             $commentsConditions = array('conditions' => array('Comment.news_id = ' => $id));
-
+       
+            $tagTypes = $this->TagType->find('all');
+            $textTypes = $this->TextType->find('all');
+            $tagsDetail = $this->TagDetail->find('all'); 
+            
+            $tagsById = $this->getTagsById ($tags);
+            $tagsDetailById = $this->getTagsDetailById ($tagsDetail);
+            $tagTypesById = $this->getTagsTypesById ($tagTypes);
+            $textTypesById = $this->getTextTypesById ($textTypes);
+              
             $this->set('annotations', $this->Annotation->find('all', $optionsAnnotations));
             $this->set('tags', $tags);
             $this->set('events', $events);
-            $this->set('tag_types', $this->getTagTypes($tags));
+            //$this->set('tag_types', $this->getTagTypes($tags));
             $news = $this->News->find('first', $optionsNews);
             $this->set('news', $news);
             $this->set('statuses', $this->load_statuses('-'));
@@ -244,6 +291,24 @@ class NewsController extends AppController {
             $this->set('comments', $this->Comment->find('all', $commentsConditions));
             $this->set('actors', $this->load_actors());
             $this->set('cities', $this->load_cities());
+            $this->set('tagsById', $tagsById);
+            $this->set('tagTypes', $tagTypes);
+            $this->set('tagTypesById', $tagTypesById);
+            $this->set('textTypesById', $textTypesById);
+            $this->set('tagsDetailById', $tagsDetailById);
+            $this->set('annotattes', $annotattes);
+            
+            //debug("........................") ;
+            //debug($this->getEventGroups($id)) ;
+            //debug("........................") ;
+            //debug($tagsById);
+            //debug("------------------------") ;
+            //debug($tagTypesById);
+            //debug("........................") ;
+            //debug($textTypesById);
+            //debug("-------------------------") ;
+            //debug($annotattes);
+            //debug($tagsDetailById);
         }
     }
 
