@@ -250,14 +250,14 @@ class NewsController extends AppController {
             
         } else {
             $this->loadModel('Tag');
-            $this->loadModel('Annotation');
+            
             $this->loadModel('Event');
             $this->loadModel('Comment');
             $this->loadModel('TagType');
             $this->loadModel('TextType');
             $this->loadModel('TagDetail'); 
             
-            $optionsAnnotations = array('conditions' => array('Annotation.news_id' => $id));
+            //$annotations = array('conditions' => array('AnnotationDetail.news_id' => $id));
             $optionsNews = array('conditions' => array('News.' . $this->News->primaryKey => $id));
             $events = $this->Event->find('all', array('order' => 'event.name'));
 
@@ -267,8 +267,9 @@ class NewsController extends AppController {
             $tags = $this->Tag->find('all', 
                  array('contain' => array('TagDetail' ),'order' => 'tag.name'));
             
-            $annotattes = $this->Annotation->find('all', array('conditions'=> array('Annotation. news_id =' => 223)));
-            
+            //$prueba = $this->AnnotationDetail->find('all',array('groupBy' => 'AnnotationDetail.tag_id'));
+           
+                    
             $commentsConditions = array('conditions' => array('Comment.news_id = ' => $id));
        
             $tagTypes = $this->TagType->find('all');
@@ -280,7 +281,7 @@ class NewsController extends AppController {
             $tagTypesById = $this->getTagsTypesById ($tagTypes);
             $textTypesById = $this->getTextTypesById ($textTypes);
               
-            $this->set('annotations', $this->Annotation->find('all', $optionsAnnotations));
+            //$this->set('annotations', $annotations);
             $this->set('tags', $tags);
             $this->set('events', $events);
             //$this->set('tag_types', $this->getTagTypes($tags));
@@ -289,19 +290,19 @@ class NewsController extends AppController {
             $this->set('statuses', $this->load_statuses('-'));
             $this->set('saved_event_groups', $this->getEventGroups($id));
             $this->set('comments', $this->Comment->find('all', $commentsConditions));
-            $this->set('actors', $this->load_actors());
-            $this->set('cities', $this->load_cities());
+            //$this->set('actors', $this->load_actors());
+            //$this->set('cities', $this->load_cities());
             $this->set('tagsById', $tagsById);
             $this->set('tagTypes', $tagTypes);
             $this->set('tagTypesById', $tagTypesById);
             $this->set('textTypesById', $textTypesById);
             $this->set('tagsDetailById', $tagsDetailById);
-            $this->set('annotattes', $annotattes);
+ 
             
             //debug("........................") ;
             //debug($this->getEventGroups($id)) ;
             //debug("........................") ;
-            //debug($tagsById);
+            //debug($prueba);
             //debug("------------------------") ;
             //debug($tagTypesById);
             //debug("........................") ;
@@ -344,7 +345,7 @@ class NewsController extends AppController {
             'news_status' => $news['NewsStatus']));
     }
 
-    private function load_actors() {
+    /*private function load_actors() {
         $this->loadModel('Annotation');
         $actors = array();
         $raw_annotation = $this->Annotation->find('all', array('conditions' => array('Annotation.tag_id ==' => '1',
@@ -365,9 +366,9 @@ class NewsController extends AppController {
         }
         sort($actors);
         return $actors;
-    }
+    }*/
 
-    private function load_cities() {
+   /* private function load_cities() {
         $this->loadModel('Annotation');
         $cities = array();
         $raw_annotation = $this->Annotation->find('all', array('conditions' => array('Annotation.tag_id ==' => '2',
@@ -382,10 +383,10 @@ class NewsController extends AppController {
         sort($cities);
         return $cities;
     }
-
-    public function get_actors() {
+*/
+    /*public function get_actors() {
         $this->layout = "ajax";
         $this->set('actors', $this->load_actors());
-    }
+    }*/
 
 }
