@@ -2,23 +2,19 @@
 
 App::uses('AppModel', 'Model');
 
-/**
- * AnnotationGroup Model
- *
- */
-function sort_by_date($e1, $e2) {
+//function sort_by_date($e1, $e2) {
 
-    $comparison = strtotime($e1['annotated_date']) - strtotime($e2['annotated_date']);
+    //$comparison = strtotime($e1['annotated_date']) - strtotime($e2['annotated_date']);
 
-    if ($comparison == 0) {
-        if (!empty($e1['Cidade']) && !empty($e2['Cidade'])) {
-            $comparison = strcmp($e1['Cidade'][0], $e2['Cidade'][0]);
-        } else {
-            $comparison = -10000;
-        }
-    }
-    return $comparison;
-}
+    //if ($comparison == 0) {
+        //if (!empty($e1['Cidade']) && !empty($e2['Cidade'])) {
+            //$comparison = strcmp($e1['Cidade'][0], $e2['Cidade'][0]);
+        //} else {
+            //$comparison = -10000;
+        //}
+    //}
+    //return $comparison;
+//}
 
 class AnnotationGroup extends AppModel {
 
@@ -78,7 +74,7 @@ class AnnotationGroup extends AppModel {
             'inconsistentGroups' => $inconsistentGroups);
     }
 
-    public function aggregate_events_old() {
+/*    public function aggregate_events_old() {
         $raw = $this->query("SELECT
             annotation_group.annotation_group_id, 
             annotation_group.news_id,
@@ -132,5 +128,5 @@ class AnnotationGroup extends AppModel {
 
         return $groups;
     }
-
+*/
 }
