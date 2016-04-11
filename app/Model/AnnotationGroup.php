@@ -2,20 +2,6 @@
 
 App::uses('AppModel', 'Model');
 
-//function sort_by_date($e1, $e2) {
-
-    //$comparison = strtotime($e1['annotated_date']) - strtotime($e2['annotated_date']);
-
-    //if ($comparison == 0) {
-        //if (!empty($e1['Cidade']) && !empty($e2['Cidade'])) {
-            //$comparison = strcmp($e1['Cidade'][0], $e2['Cidade'][0]);
-        //} else {
-            //$comparison = -10000;
-        //}
-    //}
-    //return $comparison;
-//}
-
 class AnnotationGroup extends AppModel {
 
     public $useTable = 'annotation_group';
@@ -23,20 +9,66 @@ class AnnotationGroup extends AppModel {
     public $actsAs = array('Containable');
     public $hasMany = array('Annotation');
 
-#	public $hasMany = array(
-#	    'Annotation' => array(
-#    			'className'     => 'Annotation',
-#    			'conditions'    => array(
-#    			    'Annotation.annotation_group_id = AnnotationGroup.annotation_group_id'),
-#    			'foreignKey'    => false
-#    		),
-#	);
-
     private function isValidDate($date) {
         return (bool) preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $date);
     }
+    
+    private function getFields(){
+        
+    }
+    
+    public function aggregate_events(){        
+        $raw = $this->query("SELECT  
+            annotation.annotation_group_id, 
+            tag_detail.name,
+            annotation.annotation_id,
+            annotation_detail.value,
+            annotation.news_id
+            FROM annotation_detail
+            LEFT JOIN annotation ON annotation.annotation_id = annotation_detail.annotation_id
+            LEFT JOIN tag_detail ON tag_detail.tag_detail_id = annotation_detail.tag_detail_id
+            WHERE name IN ('cidade.cidade', 'data.data')
+            ORDER BY annotation.annotation_group_id, tag_detail.name ASC");
+        
+        $inconsistentGroups = array();
+        $annotationGroups = array();
+        $currAnnotation = -1;
+        
+        for($i = 0; $i < count($raw) - 1; $i++) {
+            $current = $raw[$i];
+            $next = $raw[$i+1];
+            
+            if($current['annotation']['annotation_group_id'] != 
+               $next['annotation']['annotation_group_id'])
+            {
+                continue;
+            }
+            if($current['tag_detail']['name'] == 'cidade.cidade' and
+               $next['tag_detail']['name'] == 'data.data')
+            {
+                $date = $next['annotation_detail']['value'];
+                $city = $current['annotation_detail']['value'];
+                $fields = array(
+                    'annotation_group_id' => $current['annotation']['annotation_group_id'],
+                    'news_id' => $current['annotation']['news_id']);
+                $annotationGroups[] = array($date, $city, $fields);
+            }
+            else{
+                $inconsistentGroups[] = array(
+                    'annotation_group_id' => $current['annotation']['annotation_group_id'],
+                    'news_id' => $current['annotation']['news_id'],
+                    'value' => $current['annotation_detail']['value'] . ' - ' .
+                               $next['annotation_detail']['value']
+                    );
+            }
+        }
 
-    public function aggregate_events() {
+        asort($annotationGroups);
+        return array('annotationGroups' => $annotationGroups,
+                     'inconsistentGroups' => $inconsistentGroups);
+    }
+
+    /*public function aggregate_events() {
         $raw = $this->query("SELECT annotation_group_id, news_id,
                              count(*) as total_annotations, 
                              GROUP_CONCAT(value) as value from annotation 
@@ -73,6 +105,7 @@ class AnnotationGroup extends AppModel {
         return array('annotationGroups' => $annotationGroups,
             'inconsistentGroups' => $inconsistentGroups);
     }
+    */
 
 /*    public function aggregate_events_old() {
         $raw = $this->query("SELECT
