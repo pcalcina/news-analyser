@@ -18,7 +18,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     var TagsTypesById = <?php echo json_encode($tagTypesById); ?>;
     var TextTypesById = <?php echo json_encode($textTypesById); ?>;
     var TagDetail = <?php echo json_encode($tagsDetailById); ?>;
-     
+    var radio_count_tag_detail = 1; 
       
     var TAG_NAMES = {};
     var NEWS_ID = '<?php echo $news['News']['news_id'] ?>';
@@ -63,7 +63,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         $('.annotation-name').on('change', function () {
             alert($(this).val());
         });
-
+            
         fillEventGroups(savedEventGroups);
 
         //setInterval(function () {
@@ -268,20 +268,22 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
             row.data('clones', []);
                
             var btnRemove = createBtnRemoveInputProperty(options);
+            console.log("Criando btnRemove");
             btnRemove.addClass('btnRemove');
-            btnRemove.click(function () { 
-                if (row.data('clones').length == 0) {
-                        row.find('.label').replaceWith(createTdLabel(options));
-                         
-                        row.find('.value').replaceWith(createTdValue(options));
-                        row.find('.change').replaceWith(createTdChange(options));
-                        row.data('validValue', false);
-                        removeAnnotation(row);
+            btnRemove.click(function () {  
+                if (row.data('clones').length === 0) {
+                    row.find('.label').replaceWith(createTdLabel(options)); 
+                    row.find('.value').replaceWith(createTdValue(options));
+                    row.find('.change').replaceWith(createTdChange(options));
+                    row.data('validValue', false);
+                    console.log("rem1");
+                    removeAnnotation(row);
                 }
                 else {
-                        var oldRow = row.data('clones').pop();
-                        removeAnnotation(oldRow);
-                        oldRow.remove();
+                    var oldRow = row.data('clones').pop();
+                    console.log("rem2");
+                    removeAnnotation(oldRow);
+                    oldRow.remove();
                 }
             });
       
@@ -318,7 +320,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                 var value = annotationDetail.value;
                 //var nameClass = annotationDetail.annotation_detail_id + "-" + currentTagDetail.TagDetail.tag_type_id;
                 var tr = createInputPropertyDetailNew(currentTagDetail2,value,annotation.annotation_id, annotationDetail.annotation_detail_id); 
-                //tr.data('annotation_detail_id',annotationDetail.annotation_detail_id);
+                tr.data('annotation_detail_id',annotationDetail.annotation_detail_id);
                 table.append(tr); 
             });  
         }
@@ -338,9 +340,16 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                 } 
             }  
         }
-        
+        radio_count_tag_detail++;
         return table;
     }
+    
+     
+    function get_name_radio(){
+         return "Tag_Detail_" + radio_count_tag_detail;
+         
+    }
+    
     
      function createInputPropertyDetailNew(currentTagDetail,value,annotationID,annotationDetailID)
      {
@@ -354,8 +363,8 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
             case "CheckBox":
                         tr = createInputCheckBox(currentTagDetail.title, value);
                         break;
-            case "RadioBox":
-                        tr = createInputRadioBox(currentTagDetail.title, value, annotationID, annotationDetailID);
+            case "RadioBox": 
+                        tr = createInputRadioBox(currentTagDetail.title, value, get_name_radio(), annotationDetailID);
                         break;
             case "Labelled TextBox":
                         var typeText =TextTypesById[currentTagDetail.text_type_id].TextType.name;
@@ -365,7 +374,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                         createInputTextBox(value,"Text");
                         break;
          }
-        tr.data('annotation_detail_id',annotationDetailID);   
+        //tr.data('annotation_detail_id',annotationDetailID);   
         tr.data('tag_detail_id',currentTagDetail.tag_detail_id);
          return tr;
 
@@ -481,7 +490,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         row.find('>td.value').empty().append(tdValue);
         row.find('>td.change').empty().append(btnRemove);
     }
-      
+    
     function  createInputTextBox(value, typeText )//Ejemplo typeText Number, Text, etc
     {
         var inputTextBox = $('<input>').val(value);
@@ -520,21 +529,23 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         return tr;
     }
     
-    function createInputRadioBox(title, value, annotationId, annotationDetailId ){
+    function createInputRadioBox(title, value, nameRadio, annotationDetailId ){
  
-        var radioName = annotationId;
-        //console.log(value);
-        var valor = false;
-        if(value == "true")
-        {
-            console.log(title + " - "+ value);
-            valor=true;
-        }
+        var radioName = nameRadio; 
+        console.log(nameRadio);
         var radioBox = $('<input>')
                 .prop('type', 'radio') 
                 .prop('name', radioName) 
-                .val(valor);
-  
+                .val(false);
+ 
+        if(value === "true") {
+            radioBox.prop('checked', true);
+        }
+        else{
+            radioBox.prop('checked', false);
+        }
+        
+        
         var tr = $('<tr>')
                 .append($('<td>').append(radioBox).css('width', '10px'))
                 .append($('<td>').append(title).css('vertical-align', 'middle'));        
@@ -607,17 +618,44 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         return Object.prototype.toString.call(thing);
     }
     
+     
+    
+    function getValueAnnotationsDetails(type, input)
+    {
+        var value;
+        switch (type) {
+            case "text":  
+                value = $(input).val();
+                break;
+            case "checkbox":   
+                value = $(input).is(':checked');
+                break;
+            case "radio": 
+                value = $(input).is(':checked');
+                console.log(value);
+                break;  
+            default:  
+                value = $(input).val(); 
+                break;
+        } 
+        return value;
+    }
+    
     function getAnnotationsDetail(trs)
     {   
-         var annotationsDetail = [];
+        var annotationsDetail = [];
+        
         trs.each(function(i,tr){ 
             var input = $.find('input', tr); 
-            console.log("->:" + $(input).val());
+             
+            //var val = getValueAnnotationsDetails( $(input).prop('type'), input); 
+            //console.log($(tr).data('annotation_detail_id'));
             annotationsDetail.push({
                 annotation_detail_id: $(tr).data('annotation_detail_id'),  
-                tag_detail_id: $(tr).data('tag_detail_id') 
-                //value:input.val() 
-            });    
+                tag_detail_id: $(tr).data('tag_detail_id'), 
+                value : getValueAnnotationsDetails( $(input).prop('type'), input)
+            }); 
+            
         });
         return annotationsDetail;
     }
@@ -625,11 +663,10 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     function getAnnotations(container) {
         var annotations = [];
         
-        container.find('>tr').each(function (i, row) {
-             
+        container.find('>tr').each(function (i, row) { 
             if ($(row).data('validValue')) {
                 //console.log($(row).data('selectedTag'));
-                console.log("annotationId: " + $(row).data('annotationId'));
+                //console.log("annotationId: " + $(row).data('annotationId'));
                 //getAnnotationsDetail($(row).find('table>tbody')) 
                 annotations.push({
                     annotation_id: $(row).data('annotationId'),
@@ -650,7 +687,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
 
         $('.event-group-container').each(function (i, container) {
             //Recorre cada grupo
-            //console.log("Grupo: "+ i);
+            //console.log("Grupo: "+ i); 
             groups.push({ 
                 event_id: $(container).find('.event-group-select').select2('val'),
                 group_id: $(container).find('.event-group-id').val(),
@@ -664,17 +701,18 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         var highlights = $('#texto-principal').getHighlighter().serializeHighlights();
 
         //console.log(groups);
-
+        //console.log("--------------");
         $.post(
             URL_SAVE_ANNOTATIONS,
             {groups: groups, news_id: NEWS_ID, highlights: highlights},
-            function (groups) {
+            function (remoteGroups) {
                 $('.event-group-container').remove();
-                $('#message-saving').hide();
-                fillEventGroups(groups);
+                $('#message-saving').hide(); 
+                //console.log(remoteGroups);
+                fillEventGroups(remoteGroups);
             },
-            'json'
-        ); 
+            'json'      
+        );  
     }        
      
   /* 

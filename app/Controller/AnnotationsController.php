@@ -62,13 +62,11 @@ class AnnotationsController extends AppController {
 	
 	public function saveAjax(){
             $this->layout = "ajax";
+            $this->loadModel('News');
             $this->loadModel('AnnotationGroup');
             $this->loadModel('Annotation');
             $this->loadModel('AnnotationDetail'); 
-            $this->loadModel('News');
-        
-            $groupDate = array('AnnotationGroup' => array('creation' => date('Y-m-d H:i:s')));
-             
+ 
             $this->News->save(array('News' => 
             array('news_id'   => $this->request->data['news_id'],
                   'highlights' => $this->request->data['highlights'],
@@ -79,6 +77,7 @@ class AnnotationsController extends AppController {
                 foreach($this->request->data['groups'] as $group){
                     
 		    if(empty($group['group_id'])){
+                            $groupDate = array('AnnotationGroup' => array('creation' => date('Y-m-d H:i:s')));
 		            $this->AnnotationGroup->create();
 		            if($this->AnnotationGroup->save($groupDate)){
            		        $groupId = $this->AnnotationGroup->id;
@@ -101,24 +100,31 @@ class AnnotationsController extends AppController {
 		        
 		    if(!empty($group['annotations'])){
 		        foreach($group['annotations'] as $annotation){
-		            $annotation['annotation_group_id'] = $groupId;
-		                
+                            
+		            $annotation['annotation_group_id'] = $groupId; 
 			    if(empty($annotation['annotation_id'])){
                                 unset($annotation['annotation_id']);
+                                $this->Annotation->create();
+                                $this->Annotation->save(array('Annotation' => $annotation));
+                                $annotationId = $this->Annotation->id;
                             }
-
-                            $this->Annotation->create();			
-			    $this->Annotation->save(array('Annotation' => $annotation));
+                            else
+                            {
+                                $this->Annotation->save(array('Annotation' => $annotation));
+                                $annotationId = $annotation['annotation_id'];
+                            }
                             
-                            foreach($annotation['annotationsDetail'] as $annotationDetail){
-                                $annotationDetail['annotation_id'] = $annotation['annotation_id'];
-                                if(empty($annotationDetail['annotation_detail_id'])){
-                                    unset($annotationDetail['annotation_detail_id']);
-                                }
-
-                                $this->AnnotationDetail->create();			
-                                $this->AnnotationDetail->save(array('AnnotationDetail' => $annotationDetail));
-                                
+                            
+                            if(!empty($annotation['annotationsDetail'])){
+                                foreach($annotation['annotationsDetail'] as $annotationDetail){ 
+                                    
+                                    $annotationDetail['annotation_id'] = $annotationId; 
+                                    if(empty($annotationDetail['annotation_detail_id'])){
+                                         unset($annotationDetail['annotation_detail_id']);
+                                         $this->AnnotationDetail->create(); 
+                                    } 
+                                    $this->AnnotationDetail->save(array('AnnotationDetail' => $annotationDetail));       
+                                } 
                             }
                         }
                     }
@@ -135,12 +141,16 @@ class AnnotationsController extends AppController {
 	
 	public function deleteAjax(){
 		$this->layout = "ajax";
-		
+		$annotationId = $this->request->data['id'];
 		$this->Annotation->id = $this->request->data['id'];
-
-		if ($this->Annotation->exists()) {
-			$this->Annotation->delete();
-		}
+                $this->request->onlyAllow('post', 'delete');
+                
+		if ($this->Annotation->exists()) { 
+                     
+                    $this->loadModel('AnnotationDetail');
+                    $this->AnnotationDetail->deleteAll(array('AnnotationDetail.annotation_id' => $annotationId)); 
+		    $this->Annotation->delete(); 
+                }
 	}
         
 	public function delete($id = null) {
