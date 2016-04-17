@@ -246,30 +246,23 @@ class NewsController extends AppController {
         if (!$this->News->exists($id)) {
             throw new NotFoundException(__('Invalid news'));
         }
+        
         if ($this->request->is(array('post', 'put'))) {
             
-        } else {
+        } 
+        else {
             $this->loadModel('Tag');
-            
             $this->loadModel('Event');
             $this->loadModel('Comment');
             $this->loadModel('TagType');
             $this->loadModel('TextType');
             $this->loadModel('TagDetail'); 
             
-            //$annotations = array('conditions' => array('AnnotationDetail.news_id' => $id));
             $optionsNews = array('conditions' => array('News.' . $this->News->primaryKey => $id));
             $events = $this->Event->find('all', array('order' => 'event.name'));
-
-            //$tags = $this->Tag->find('all', array('order' => 'tag.name'));
-    
-   
             $tags = $this->Tag->find('all', 
                  array('contain' => array('TagDetail' ),'order' => 'tag.name'));
             
-            //$prueba = $this->AnnotationDetail->find('all',array('groupBy' => 'AnnotationDetail.tag_id'));
-           
-                    
             $commentsConditions = array('conditions' => array('Comment.news_id = ' => $id));
        
             $tagTypes = $this->TagType->find('all');
@@ -281,35 +274,18 @@ class NewsController extends AppController {
             $tagTypesById = $this->getTagsTypesById ($tagTypes);
             $textTypesById = $this->getTextTypesById ($textTypes);
               
-            //$this->set('annotations', $annotations);
             $this->set('tags', $tags);
             $this->set('events', $events);
-            //$this->set('tag_types', $this->getTagTypes($tags));
             $news = $this->News->find('first', $optionsNews);
             $this->set('news', $news);
             $this->set('statuses', $this->load_statuses('-'));
             $this->set('saved_event_groups', $this->getEventGroups($id));
             $this->set('comments', $this->Comment->find('all', $commentsConditions));
-            //$this->set('actors', $this->load_actors());
-            //$this->set('cities', $this->load_cities());
             $this->set('tagsById', $tagsById);
             $this->set('tagTypes', $tagTypes);
             $this->set('tagTypesById', $tagTypesById);
             $this->set('textTypesById', $textTypesById);
             $this->set('tagsDetailById', $tagsDetailById);
- 
-            
-            //debug("........................") ;
-            //debug($this->getEventGroups($id)) ;
-            //debug("........................") ;
-            //debug($prueba);
-            //debug("------------------------") ;
-            //debug($tagTypesById);
-            //debug("........................") ;
-            //debug($textTypesById);
-            //debug("-------------------------") ;
-            //debug($annotattes);
-            //debug($tagsDetailById);
         }
     }
 

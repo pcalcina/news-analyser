@@ -725,24 +725,6 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
             <?php echo $this->Html->link(__('Ver tutorial'), 
                 array('controller' => 'tags', 'action' => 'description')); ?>
                 </span>
-
-
-                <div id="texto-principal" 
-                     style="border: 2px solid; border-radius:10px; margin: 10px; padding:10px">
-                    <div>
-                        <p><span style="width:100%; text-align:center">
-                                <b>Selecione um trecho de texto para anotá-lo</b>
-                            </span>
-                        </p>
-                        Fonte: <b> <?php echo $news['Source']['name']; ?> </b> &nbsp;&nbsp;|&nbsp;&nbsp;
-                        Tags:  <b> <?php echo $news['News']['keywords']; ?> </b> <br/><br/>
-                    </div>
-                    <h3> <?php echo h($news['News']['title']) ?>
-                        <small>(<?php echo $news['News']['date']; ?>)</small></h3>
-
-                    <div><?php echo $news['News']['content']; ?></div>
-                </div>
-
                 <span>
                     <div style='background-color:lightgray !important;'>
                         <table class='change-status'>
@@ -806,15 +788,6 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                 <div id='event-group-container-original' style='display:none'>
 
                     <input type='hidden' value='' class='event-group-id'>
-                    <!--
-                                    <span class='actions' style='text-align:center;'>
-                    -->
-
-                    <!-- <a class='event-group-add-annotation' href="javascript:">+ Anotação</a>  -->
-
-                    <!--
-                                    </span>
-                    -->
 
                     <table>
                         <tr>

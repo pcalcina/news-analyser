@@ -1,37 +1,16 @@
 <?php
 App::uses('AppController', 'Controller');
-/**
- * AnnotationGroups Controller
- *
- * @property AnnotationGroup $AnnotationGroup
- * @property PaginatorComponent $Paginator
- */
+
 class AnnotationGroupsController extends AppController {
 
-/**
- * Components
- *
- * @var array
- */
 	public $components = array('Paginator');
+    public $helpers    = array('Js');
 
-/**
- * index method
- *
- * @return void
- */
 	public function index() {
 		$this->AnnotationGroup->recursive = 0;
 		$this->set('annotationGroups', $this->Paginator->paginate());
 	}
 
-/**
- * view method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
 	public function view($id = null) {
 		if (!$this->AnnotationGroup->exists($id)) {
 			throw new NotFoundException(__('Invalid annotation group'));
@@ -40,11 +19,6 @@ class AnnotationGroupsController extends AppController {
 		$this->set('annotationGroup', $this->AnnotationGroup->find('first', $options));
 	}
 
-/**
- * add method
- *
- * @return void
- */
 	public function add() {
 		if ($this->request->is('post')) {
 			$this->AnnotationGroup->create();
@@ -57,13 +31,6 @@ class AnnotationGroupsController extends AppController {
 		}
 	}
 
-/**
- * edit method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
 	public function edit($id = null) {
 		if (!$this->AnnotationGroup->exists($id)) {
 			throw new NotFoundException(__('Invalid annotation group'));
@@ -81,13 +48,6 @@ class AnnotationGroupsController extends AppController {
 		}
 	}
 
-/**
- * delete method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
 
     public function deleteAjax(){
         $this->layout = "ajax";
@@ -124,4 +84,21 @@ class AnnotationGroupsController extends AppController {
 		$this->set('groups', $this->AnnotationGroup->aggregate_events());
 	}
     
+        
+    public function aggregate() {
+        $groupIds = explode(',', $this->params->named['x']);
+        debug($groupIds);
+        debug($this->getEventGroups($groupIds));
+        exit;
+	}
+    
+    protected function getEventGroups($ids) { 
+        $this->loadModel('AnnotationGroup');
+        $this->loadModel('Annotation');
+        $this->loadModel('AnnotationDetail'); 
+   
+        return $this->AnnotationGroup->find('all', 
+                 array('conditions' => array('annotation_group_id' => $ids),
+                    'contain' => array('Annotation' => array('AnnotationDetail'))));
+    }
 }

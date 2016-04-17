@@ -1,0 +1,1 @@
+SELECT tag.tag_id, tag.name, tag_detail.name FROM tag LEFT JOIN tag_detail ON tag.tag_id = tag_detail.tag_id;
