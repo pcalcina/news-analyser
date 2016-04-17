@@ -50,8 +50,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         addDatePicker($('.datepicker'));
 
         $('#texto-principal').textHighlighter({
-            onAfterHighlight: function (highlights, text) {
-
+            onAfterHighlight: function (highlights, text) { 
                 if (text.length > 0) {
                     addTagRow({text: text, highlights: highlights});
                 }
@@ -72,16 +71,13 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
             $(this).css('width', '100%').css('height', 'auto');
         });
 
-        activateCommentButton();
-
-        showComments(COMMENTS);
-
-        //console.log("<parsing>");
+        activateCommentButton(); 
+        showComments(COMMENTS); 
+        
         if (SERIALIZED_HIGHLIGHTS) {
             $('#texto-principal').getHighlighter()
                     .deserializeHighlights(SERIALIZED_HIGHLIGHTS);
-        }
-        //console.log("</parsing>");
+        } 
     });
     
     function showComments(comments) {
@@ -95,7 +91,8 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
             row.append('<hr>');
             $("#comment-list").append(row);
         });
-    }     
+    }   
+    
     function activateCommentButton() {
         $("#btnComment").click(function () {
             $('#message-saving').show();
@@ -109,7 +106,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                 $("#txtComment").val('');
             },
                     'json'
-                    );
+                );
         });
     }
     
@@ -184,16 +181,14 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     }
     
     function removeEventGroup(container) {
-        var groupId = container.find('.event-group-id').val();
-
+        var groupId = container.find('.event-group-id').val(); 
         if (groupId) {
             $.post(
                     URL_REMOVE_ANNOTATION_GROUP,
                     {groupId: groupId},
             function (response) {
             });
-        }
-
+        } 
         container.remove();
     }
     
@@ -216,8 +211,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         
     }
     
-    function addInputPropertyNew(annotation,options) {
-        //console.log(options);
+    function addInputPropertyNew(annotation,options) { 
         options = normalizeInputPropertyOptions(options);
  
         var row;
@@ -286,7 +280,6 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
             });
       
             var tdValue = createInputPropertyNew(annotation,options.text, options.selectedTag,options.annotationId);
-            //console.log(tdvalue);            
             addTagRowToTableNew(options,tdValue,btnRemove,row,options.table); 
  
             //if (options.annotationId) {
@@ -305,8 +298,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         options.text = '';
     }
      
-    function createInputPropertyNew(annotation, text, selectedTag, selectedAnnotation) {
-        //console.log(selectedAnnotation);
+    function createInputPropertyNew(annotation, text, selectedTag, selectedAnnotation) { 
         var table = $('<table>').css("font-size", "8pt");
          
         if(annotation)
@@ -402,10 +394,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         return tdLabel;
     }
 
-    function createTdValue(options) {
-       /* console.log("------");
-        console.log(options);
-        console.log("------"); */
+    function createTdValue(options) { 
         var annotation;
         var tdValue = $("<td>").addClass('value')
                 .css('padding', '0px')
@@ -460,8 +449,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                         }
                         catch (e) {
 
-                        }
-
+                        } 
                     }
                 });
 
@@ -690,8 +678,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
             {groups: groups, news_id: NEWS_ID, highlights: highlights},
             function (remoteGroups) {
                 $('.event-group-container').remove();
-                $('#message-saving').hide(); 
-                //console.log(remoteGroups);
+                $('#message-saving').hide();  
                 fillEventGroups(remoteGroups);
             },
             'json'      
