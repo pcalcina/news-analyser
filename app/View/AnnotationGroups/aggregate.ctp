@@ -705,132 +705,25 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     <table style="width:100%">
         <tr>
             <td style="width:55%;">
-                &nbsp; &nbsp; &nbsp;
-                <span class='actions' style='padding-bottom:12px;'>
-            <?php if ($this->request->referer() != '/'): ?>
-                <?php echo $this->Html->link(__('< Voltar à lista'), 
-    		            $this->request->referer()); ?>
-		    <?php else: ?>
-                <?php echo $this->Html->link(__('< Voltar à lista'), 
-    		            array('controller'=>'News', 'action'=>'index')); ?>
-    		<?php endif; ?>
-
-                    &nbsp;
-
-            <?php echo $this->Html->link(__('Gerenciar eventos'), 
-		            array('controller' => 'events', 'action' => 'index')); ?> 
-                    &nbsp;
-
-
-            <?php echo $this->Html->link(__('Ver tutorial'), 
-                array('controller' => 'tags', 'action' => 'description')); ?>
-                </span>
-                <span>
-                    <div style='background-color:lightgray !important;'>
-                        <table class='change-status'>
-                            <tr>
-                                <td>Status atual:</td>
-                                <td>Marcar como: </td>
-
-                                <td rowspan=2>
-                                    <input type='button' value='Marcar'
-                                           onclick="changeStatus($('#next_statuses').val());">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <b id='current_status_description'> 
-                            <?php echo $news['NewsStatus']['description']; ?> 
-                                    </b>
-                                </td>
-
-                                <td>
-		            <?php echo $this->Form->input('next_status', 
-                       array('default' => $news['NewsStatus']['next_status_id'], 
-                             'options' => $statuses,
-                             'id' => 'next_statuses',
-                             'label' => '')) ?>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-
-                    <div style='padding:10px;'>
-                        <center>
-                            Fluxo de Codificação: <br/>
-                            <b> 1.Suja &nbsp; &#8594; &nbsp; 
-                                2.Limpa &nbsp; &#8594; &nbsp; 
-                                3.Codificada &nbsp; &#8594; &nbsp; 
-                                4.Validada </b>
-                        </center>
-                    </div>
-
-                    <hr>
-                    <span>
-                        &nbsp;&nbsp;&nbsp;<label><h4>
-                                <span id='comment-counter'>0</span> 
-                                Comentários</h4></label>
-                        <table id="comment-list" style="padding:10"></table>
-                        <textarea id="txtComment" placeholder="Digite seu comentário"></textarea>
-                        <button id='btnComment'>Comentar</button>
-                    </span>
-
-                </span>
+                <table>
+                <?php foreach ($annotationGroups as $group): ?>
+                    <tr>
+                        <td>
+                            <?php foreach ($group['Annotation'] as $annotation): ?>
+                                <?php foreach ($annotation['AnnotationDetail'] as $detail): ?>
+                                    <?php echo $detail['tag_detail_id'] . ' - ' .$detail['value'] . '<br/>' ; ?>
+                                <?php endforeach; ?>
+                            <?php endforeach; ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                </table>
             </td>
 
-            <td id='event-groups' style='vertical-align:top; text-align: center'>
-                <span class='actions' style='text-align:center; padding-bottom:12px'>
-                    <a href='javascript:createEventGroup();'> + Evento</a> 
-                    &nbsp;
-                    <a href='javascript:saveEventGroups();'> Salvar </a> 
-                </span>
-
-                <div id='event-group-container-original' style='display:none'>
-
-                    <input type='hidden' value='' class='event-group-id'>
-
-                    <table>
-                        <tr>
-                            <td style='text-align:center;width:30px'>
-                                <div class='event-group-highlight-color' 
-                                     style='background:yellow; width:30px; position:absolute;'> 
-                                    &nbsp; &nbsp; &nbsp;</div>
-                            </td>
-
-                            <td style='text-align:center;vertical-alightment:center;width:auto'>
-                                <select class='event-group-select'>
-                                    <option value=''></option>
-                                <?php foreach ($events as $event): ?>
-                                    <option value="<?php echo h($event['Event']['event_id']); ?>">
-                                        <?php echo h($event['Event']['name']); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                                </select>
-                            </td>
-
-                            <td class='actions' style='text-align:center;vertical-alightment:center;width:10px'>
-                                <span>
-                                    <a class='event-group-remove-event' href="javascript:"></a></td>
-                            </span>
-                        </tr>
-                    </table>
-
-                    <table style="width:100%">
-                        <tbody class='event-group-annotations'></tbody>
-                    </table>
-
-                </div>
-            </td>	
+            <td id='event' style='vertical-align:top; text-align: center'>
+                AQUI VA EL EVENTO
+            </td>
         </tr>
     </table>
 </div>
-<div id="message-saving" style='display:none'>Salvando alterações ...</div>
-<div id="addTagRow" style=display:none;><span>
-        <select class="options-tags" id="options-tags" style="width:100%">
-    <?php foreach ($tags as $tag): ?>
-            <option value="<?php echo h($tag['Tag']['tag_id']); ?>">
-	    <?php echo h($tag['Tag']['name']); ?></option>
-    <?php endforeach; ?>
-        </select>
-    </span>
-</div>
+<div id="message-saving" style='display:none'>Salvando evento ...</div>

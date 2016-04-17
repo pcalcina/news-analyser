@@ -48,7 +48,6 @@ class AnnotationGroupsController extends AppController {
 		}
 	}
 
-
     public function deleteAjax(){
         $this->layout = "ajax";
     	$this->AnnotationGroup->id = $this->request->data['groupId'];
@@ -83,13 +82,11 @@ class AnnotationGroupsController extends AppController {
         $this->AnnotationGroup->recursive = 0;        
 		$this->set('groups', $this->AnnotationGroup->aggregate_events());
 	}
-    
         
     public function aggregate() {
         $groupIds = explode(',', $this->params->named['x']);
-        debug($groupIds);
-        debug($this->getEventGroups($groupIds));
-        exit;
+        
+        $this->set('annotationGroups', $this->getEventGroups($groupIds));
 	}
     
     protected function getEventGroups($ids) { 

@@ -31,7 +31,6 @@ function url_to_utf8($url) {
 }
 
 class NewsController extends AppController {
-
     public $components = array('Paginator');
 
     public function beforeFilter() {
