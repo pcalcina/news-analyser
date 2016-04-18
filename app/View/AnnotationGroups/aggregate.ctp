@@ -20,6 +20,8 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         TAG_NAMES[TAGS[i].Tag.tag_id] = TAGS[i].Tag.name;
     }
     var radio_count_tag_detail = 1;   
+    var data = "<?php echo $orderedGroups['date']; ?>";
+    var cidade = "<?php echo $orderedGroups['city']; ?>";
     
     $(document).ready(function () {
         addDatePicker($('.datepicker')); 
@@ -540,13 +542,13 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
 
 </script>
 
-
+<h2><?php echo "Evento {$orderedGroups['city']} - {$orderedGroups['date']}"; ?></h2>
 <div class="news">
   <table style="width:100%">
     <tr>
       <td style="width:55%;">
         <table>
-          <?php foreach ($orderedGroups as $tagId => $annotations): ?>
+          <?php foreach ($orderedGroups['orderedGroups'] as $tagId => $annotations): ?>
           <tr>
             <td>
               <b> <?php echo $tagsById[$tagId]['Tag']['name']; ?> </b>

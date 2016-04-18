@@ -119,13 +119,13 @@ class AnnotationGroupsController extends AppController {
         $tagTypes = $this->TagType->find('all');
         $textTypes = $this->TextType->find('all');                                              
         $tagsById = $this->getTagsById ($tags);                         
-        $groups = $this->orderGroupsByAnnotation($this->getEventGroups($groupIds), $tagsById);        
+        $orderedGroups = $this->orderGroupsByAnnotation($this->getEventGroups($groupIds), $tagsById);        
         $tagsDetail = $this->TagDetail->find('all'); 
         $tagsDetailById = $this->getTagsDetailById ($tagsDetail);
         $tagTypesById = $this->getTagsTypesById ($tagTypes);
         $textTypesById = $this->getTextTypesById ($textTypes);
         $this->set('tags', $tags);
-        $this->set('orderedGroups', $groups);
+        $this->set('orderedGroups', $orderedGroups);
         $this->set('tagsById', $tagsById);        
         $this->set('tagsDetailById', $tagsDetailById);
         $this->set('tagTypesById', $tagTypesById);
@@ -142,16 +142,26 @@ class AnnotationGroupsController extends AppController {
     
     protected function orderGroupsByAnnotation($groups, &$tagsById){
         $orderedGroups = array();
+        $data = '';
+        $city = '';
         foreach($groups as $group){
             foreach($group['Annotation'] as $annotation){
                 $tagName = $tagsById[$annotation['tag_id']]['Tag']['name'];
-                if($tagName != 'Data' && $tagName != 'Cidade'){
+                if($tagName === 'Data'){
+                    $data = $annotation['AnnotationDetail'][0]['value'];
+                }
+                else if($tagName === 'Cidade'){
+                    $city = $annotation['AnnotationDetail'][0]['value'];
+                }
+                else {
                     $orderedGroups[$annotation['tag_id']][] = $annotation;
-                }                
+                }               
             }
         }
         
-        return $orderedGroups;
+        return array('orderedGroups' => $orderedGroups,
+                     'date' => $data,
+                     'city' => $city);
     }
     
     protected function getEventGroups($ids) { 
