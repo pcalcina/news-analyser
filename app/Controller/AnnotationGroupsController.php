@@ -124,11 +124,12 @@ class AnnotationGroupsController extends AppController {
         $tagsDetailById = $this->getTagsDetailById ($tagsDetail);
         $tagTypesById = $this->getTagsTypesById ($tagTypes);
         $textTypesById = $this->getTextTypesById ($textTypes);
-        
+        $this->set('tags', $tags);
         $this->set('orderedGroups', $groups);
         $this->set('tagsById', $tagsById);        
         $this->set('tagsDetailById', $tagsDetailById);
         $this->set('tagTypesById', $tagTypesById);
+        $this->set('textTypesById', $textTypesById);
     }
 
     protected function getTagsById ($tags) {
