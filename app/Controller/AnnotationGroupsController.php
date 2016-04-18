@@ -3,7 +3,7 @@ App::uses('AppController', 'Controller');
 
 class AnnotationGroupsController extends AppController {
 
-	public $components = array('Paginator');
+    public $components = array('Paginator');
     public $helpers    = array('Js');
 
 	public function index() {
@@ -128,8 +128,8 @@ class AnnotationGroupsController extends AppController {
         $this->set('orderedGroups', $groups);
         $this->set('tagsById', $tagsById);        
         $this->set('tagsDetailById', $tagsDetailById);
-        $this->set('tagsDetailById', $tagsDetailById);
-	}
+        $this->set('tagTypesById', $tagTypesById);
+    }
 
     protected function getTagsById ($tags) {
         $tagsById = array();
