@@ -159,7 +159,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
             
         });
  
-       /* if (group) {
+        if (group) {
             $('.event-group-select', container)
                     .select2('val', group.AnnotationGroup.event_id);
             container.find('.event-group-id')
@@ -174,10 +174,10 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                 /*addInputProperty({text: annotation.value,
                     selectedTag: annotation.tag_id,
                     annotationId: annotation.annotation_id,
-                    table: $('.event-group-annotations', container)});* /
+                    table: $('.event-group-annotations', container)});*/
                  
             }
-        } */
+        }  
     }
     
     function removeEventGroup(container) {

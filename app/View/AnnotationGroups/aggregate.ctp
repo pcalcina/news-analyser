@@ -25,6 +25,9 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     var URL_SAVE_ANNOTATIONS = '<?php echo Router::url(
                                 array('controller' => 'events', 
                                       'action'     => 'saveAjax')); ?>';
+    var groupIds = <?php echo json_encode($groupIds); ?>;
+    
+    var eventsIds = <?php echo json_encode($eventsIds); ?>;
     $(document).ready(function () {
         addDatePicker($('.datepicker')); 
         //addDatePicker($('.datepicker'));  
@@ -54,7 +57,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         });
     }
     
-    function fillEvent(){
+    function fillEvent(){ 
         var container = $('#event-group-container-original');
         container.removeAttr('id');
         container.addClass('event-group-container');
@@ -67,6 +70,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                         //,selectedTagName: tag.Tag.name
             }); 
         }); 
+        
     }
              
     function addInputPropertyVacios(options) {
@@ -525,7 +529,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
        
         $.post(
             URL_SAVE_ANNOTATIONS,
-            {event: group},
+            {event: group, groupsIds: groupIds},
             function (remoteGroups) {
                 $('.event-group-container').remove();
                 //$('#message-saving').hide();  

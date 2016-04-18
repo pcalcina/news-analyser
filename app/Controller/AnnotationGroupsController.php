@@ -112,10 +112,13 @@ class AnnotationGroupsController extends AppController {
         $this->loadModel('TagDetail');
         $this->loadModel('TextType');
         $this->loadModel('TagType');
+        $this->loadModel('AnnotationGroup');
                 
-        $groupIds = explode(',', $this->params->named['x']);
+        $groupIds = explode(',', $this->params->named['x']); 
         $tags = $this->Tag->find('all', array('contain' => array('TagDetail' ),
                                               'order' => 'tag.name'));
+     
+        $eventsIds= $this->getEventIds ($groupIds); 
         $tagTypes = $this->TagType->find('all');
         $textTypes = $this->TextType->find('all');                                              
         $tagsById = $this->getTagsById ($tags);                         
@@ -130,8 +133,19 @@ class AnnotationGroupsController extends AppController {
         $this->set('tagsDetailById', $tagsDetailById);
         $this->set('tagTypesById', $tagTypesById);
         $this->set('textTypesById', $textTypesById);
+        $this->set('groupIds', $groupIds);
+        $this->set('eventsIds', $eventsIds);
     }
-
+    
+    protected function getEventIds ($groupIds)
+    {
+        $AnnotationGroups= $this->AnnotationGroup->find('all', array('conditions' => array('annotation_group_id' => $groupIds)));
+        $EventsIds = array();
+        foreach ($AnnotationGroups as $annotationGroup) {
+            $EventsIds[$annotationGroup['AnnotationGroup']['annotation_group_id']]=$annotationGroup['AnnotationGroup']['event_id']; 
+        }
+        return $EventsIds;
+    }
     protected function getTagsById ($tags) {
         $tagsById = array();
         foreach ($tags as $tag) {
