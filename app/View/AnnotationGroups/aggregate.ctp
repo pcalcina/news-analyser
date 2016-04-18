@@ -141,7 +141,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                 newRow.removeClass(rowClass);
                 newRow.find('>td.value').empty().append(
                          
-                        createInputPropertyNew(annotation,options.text, options.selectedTag,options.annotationId));
+                        createInputPropertyNew(annotation,options.text, options.selectedTag,options.EventannotationId));
 
                 if (row.data('clones').length == 0) {
                     newRow.insertAfter(row);
@@ -154,7 +154,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
 
                 //if (options.annotationId) {
                 if(annotation){
-                    newRow.data('annotationId', annotation.annotation_id);
+                    newRow.data('EventannotationId', annotation.annotation_id);
                 }
                 /*else
                 {
@@ -188,15 +188,15 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                 }
             });
       
-            var tdValue = createInputPropertyNew(annotation,options.text, options.selectedTag,options.annotationId);
+            var tdValue = createInputPropertyNew(annotation,options.text, options.selectedTag,options.EventannotationId);
             console.log(tdValue);
             addTagRowToTableNew(options,tdValue,btnRemove,row,options.table); 
  
             //if (options.annotationId) {
             if(annotation){
                     //row.data('annotationId', options.annotationId);
-                    row.data('annotationId', annotation.annotation_id);
-                    options.annotationId = null;
+                    row.data('EventannotationId', annotation.event_annotation_id);
+                    options.EventannotationId = null;
             }
             /*else
             {
@@ -252,13 +252,13 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     }
     
     function removeAnnotation(row) {
-        var annotationId = row.data('annotationId');
+        var EventannotationId = row.data('EventannotationId');
 
-        if (annotationId) {
+        if (EventannotationId) {
             $.ajax({
                 type: "POST",
                 url: URL_REMOVE_ANNOTATION,
-                data: {id: annotationId},
+                data: {id: EventannotationId},
                 success: function (annotations) {
                 }
             });
@@ -283,7 +283,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         return btnRemove;
     }
     
-    function createInputPropertyDetailNew(currentTagDetail,value,annotationID,annotationDetailID)
+    function createInputPropertyDetailNew(currentTagDetail,value,EventannotationId,annotationDetailID)
      {
          var currentTagType = TagsTypesById[currentTagDetail.tag_type_id];
          var tr; 
@@ -340,8 +340,8 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                 null : options.highlights;
         options.selectedTag = typeof (options.selectedTag) == "undefined" ?
                 null : options.selectedTag;
-        options.annotationId = typeof (options.annotationId) == "undefined" ?
-                null : options.annotationId;
+        options.annotationId = typeof (options.EventannotationId) == "undefined" ?
+                null : options.EventannotationId;
         options.table = typeof (options.table) == "undefined" ?
                 null : options.table;
         options.emptyProperty = typeof (options.emptyProperty) == "undefined" ?
@@ -453,21 +453,77 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         element.html('<b>' + currentLabel + '</b>');
     }
     
+     function getValueAnnotationsDetails(type, input)
+    {
+        var value;
+        switch (type) {
+            case "text":  
+                value = $(input).val();
+                break;
+            case "checkbox":   
+                value = $(input).is(':checked');
+                break;
+            case "radio": 
+                value = $(input).is(':checked');
+                console.log(value);
+                break;  
+            default:  
+                value = $(input).val(); 
+                break;
+        } 
+        return value;
+    }
+    
+    function getEventAnnotationsDetail(trs)
+    {   
+        var annotationsDetail = [];
+        
+        trs.each(function(i,tr){ 
+            var input = $.find('input', tr); 
+            annotationsDetail.push({
+                event_annotation_detail_id: $(tr).data('annotation_detail_id'),  
+                tag_detail_id: $(tr).data('tag_detail_id') 
+                //value : getValueAnnotationsDetails( $(input).prop('type'), input)
+            }); 
+            console.log(getValueAnnotationsDetails( $(input).prop('type'), input));
+        });
+        return annotationsDetail;
+    }
+    
+    function getEventAnnotations(container) {
+        var annotations = [];
+        
+        container.find('>tr').each(function (i, row) {  
+            if ($(row).data('validValue')) { 
+                annotations.push({
+                    event_annotation_id: $(row).data('EventannotationId'), 
+                    tag_id: $(row).data('selectedTag') 
+                    //annotationsDetail: getAnnotationsDetail($(row).find('table>tbody>tr')) 
+                }); 
+                getEventAnnotationsDetail($(row).find('table>tbody>tr'))
+            }
+        }); 
+         
+        return annotations;
+    }
+    
     function saveEvent() {
         //$('#message-saving').show();
         var groups = [];
 
         //$('.event-group-container').each(function (i, container) {
-            groups.push({ 
-                 
-                event_id: $('.event-group-container').find('.event-group-select').select2('val'),
-                name : "Provicionalmente",
-                //annotations: getAnnotations($(container).find('.event-group-annotations')) 
-            }); 
-            console.log($('.event-group-container').find('.event-group-select').select2('val'));
-        //});
+        console.log("Evento");
+        //console.log($('.event-group-container').find('.event-group-id').val());
+        groups.push({  
+                event_id: $('.event-group-container').find('.event-group-id').val(),
+                name : "Provicionalmente", 
+                eventAnnotations: getEventAnnotations($('.event-group-container').find('.event-group-annotations'))  
+        }); 
         
-        console.log(groups);
+         
+        //console.log($('.event-group-container').find('.event-group-select').select2('val'));
+        //}); 
+     
         /*var highlights = $('#texto-principal').getHighlighter().serializeHighlights();
 
         $.post(
