@@ -19,8 +19,10 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     for (var i = 0; i < TAGS.length; i++) {
         TAG_NAMES[TAGS[i].Tag.tag_id] = TAGS[i].Tag.name;
     }
-    var radio_count_tag_detail = 1;     
+    var radio_count_tag_detail = 1;   
+    
     $(document).ready(function () {
+        addDatePicker($('.datepicker')); 
         //addDatePicker($('.datepicker'));  
         fillEvent();
         
@@ -31,6 +33,22 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         //}, 60000); 
         
     });
+    function addDatePicker(element) {
+        element.datepicker({
+            format: "dd-mm-yyyy",
+            todayBtn: "linked",
+            orientation: "bottom right",
+            dateFormat: 'yy-mm-dd',
+            autoclose: true,
+            changeMonth: true,
+            changeYear: true,
+            minDate: '2012-01-01',
+            maxDate: '2014-12-01',
+            defaultDate: <?php echo date("Y-m-d")?>,
+            todayHighlight: true,
+            regional: $.datepicker.regional['pt_BR']
+        });
+    }
     
     function fillEvent(){
         var container = $('#event-group-container-original');
@@ -59,7 +77,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         var tdValue = createTdValue(options);
         var tdChange = createTdChange(options);
         row.append(tdLabel)
-                     .append(tdValue);
+                     .append(tdValue)  
                      .append(tdChange);
         options.table.append(row);
         options.text = '';
@@ -171,6 +189,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
             });
       
             var tdValue = createInputPropertyNew(annotation,options.text, options.selectedTag,options.annotationId);
+            console.log(tdValue);
             addTagRowToTableNew(options,tdValue,btnRemove,row,options.table); 
  
             //if (options.annotationId) {
@@ -194,6 +213,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
          
         if(annotation)
         {
+             
             $(annotation.AnnotationDetail).each(function (i, annotationDetail) {
             
                 var currentTagDetail = TagDetail[annotationDetail.tag_detail_id];
@@ -207,7 +227,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         }
         else
         { 
- 
+                
             for (var i = 0; i < TAGS.length; i++) {
  
                 if(TAGS[i].Tag.tag_id==selectedTag)
@@ -330,6 +350,16 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         return options;
     }
     
+    function addNumberOnlyRestriction(input){
+        input.on('keyup', function(){           
+            var v = this.value;
+            if($.isNumeric(v) === false){
+                this.value = this.value.slice(0,-1);
+            }
+        });
+    }
+    
+    
         function  createInputTextBox(value, typeText )//Ejemplo typeText Number, Text, etc
     {
         var inputTextBox = $('<input>').val(value);
@@ -340,8 +370,8 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                 break;
             case "Date": 
                 inputTextBox.addClass('datepicker');
-                addDatePicker(inputTextBox);
-                inputTextBox.datepicker({defaultDate: new Date(NEWS_DATE)});
+                addDatePicker(inputTextBox); 
+                inputTextBox.datepicker({defaultDate: <?php echo date("Y-m-d")?>});
                 break;
             default:
                 //addNumberOnlyRestriction(inputTextBox);
@@ -422,7 +452,35 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         var currentLabel = element.html();
         element.html('<b>' + currentLabel + '</b>');
     }
+    
+    function saveEvent() {
+        //$('#message-saving').show();
+        var groups = [];
 
+        //$('.event-group-container').each(function (i, container) {
+            groups.push({ 
+                 
+                event_id: $('.event-group-container').find('.event-group-select').select2('val'),
+                name : "Provicionalmente",
+                //annotations: getAnnotations($(container).find('.event-group-annotations')) 
+            }); 
+            console.log($('.event-group-container').find('.event-group-select').select2('val'));
+        //});
+        
+        console.log(groups);
+        /*var highlights = $('#texto-principal').getHighlighter().serializeHighlights();
+
+        $.post(
+            URL_SAVE_ANNOTATIONS,
+            {groups: groups, news_id: NEWS_ID, highlights: highlights},
+            function (remoteGroups) {
+                $('.event-group-container').remove();
+                $('#message-saving').hide();  
+                fillEventGroups(remoteGroups);
+            },
+            'json'      
+        ); */ 
+    } 
 
 </script>
 
@@ -471,7 +529,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         </div>
         <span class='actions' style='text-align:center; padding-bottom:12px'> 
 	    &nbsp;
-        <a href='javascript:saveEventGroups();'> Salvar </a> 
+        <a href='javascript:saveEvent();'> Salvar </a> 
         </span>
       </td>
    </tr>
