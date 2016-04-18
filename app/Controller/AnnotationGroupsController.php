@@ -82,12 +82,34 @@ class AnnotationGroupsController extends AppController {
         $this->AnnotationGroup->recursive = 0;        
 		$this->set('groups', $this->AnnotationGroup->aggregate_events());
 	}
-        
+    
+    protected function getTagsTypesById ($tagTypes) {
+        $tagsTypesById = array();
+        foreach ($tagTypes as $tagType) {
+            $tagsTypesById[$tagType['TagType']['tag_type_id']] = $tagType;
+        }
+        return $tagsTypesById;
+    }
+    
     public function aggregate() {
-        $groupIds = explode(',', $this->params->named['x']);
-        
+        //Annotations Groups
+        $groupIds = explode(',', $this->params->named['x']); 
         $this->set('annotationGroups', $this->getEventGroups($groupIds));
-	}
+        
+        //Events
+        $this->loadModel('Tag');
+        $this->loadModel('TagDetail'); 
+        $this->loadModel('TagType');
+        
+        $tags = $this->Tag->find('all', 
+                 array('contain' => array('TagDetail' ),'order' => 'tag.name'));  
+        $tagTypes = $this->TagType->find('all'); 
+        $tagTypesById = $this->getTagsTypesById ($tagTypes);
+        
+         $this->set('tags', $tags);
+        $this->set('tagTypesById', $tagTypesById);
+            
+    }
     
     protected function getEventGroups($ids) { 
         $this->loadModel('AnnotationGroup');
