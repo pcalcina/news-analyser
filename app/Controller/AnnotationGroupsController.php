@@ -82,12 +82,76 @@ class AnnotationGroupsController extends AppController {
         $this->AnnotationGroup->recursive = 0;        
 		$this->set('groups', $this->AnnotationGroup->aggregate_events());
 	}
+    
+    protected function getTagsDetailById ($tagsDetail) {
+        $tagsDetailById = array();
+        foreach ($tagsDetail as $tagDetail) {
+            $tagsDetailById[$tagDetail['TagDetail']['tag_detail_id']] = $tagDetail;
+        }
+        return $tagsDetailById;
+    }
+    
+    protected function getTextTypesById ($textTypes) {
+        $textTypesById = array();
+        foreach ($textTypes as $textType) {
+            $textTypesById[$textType['TextType']['text_type_id']] = $textType;
+        }
+        return $textTypesById;
+    }
+    
+    protected function getTagsTypesById ($tagTypes) {
+        $tagsTypesById = array();
+        foreach ($tagTypes as $tagType) {
+            $tagsTypesById[$tagType['TagType']['tag_type_id']] = $tagType;
+        }
+        return $tagsTypesById;
+    }    
         
     public function aggregate() {
+        $this->loadModel('Tag');
+        $this->loadModel('TagDetail');
+        $this->loadModel('TextType');
+        $this->loadModel('TagType');
+                
         $groupIds = explode(',', $this->params->named['x']);
+        $tags = $this->Tag->find('all', array('contain' => array('TagDetail' ),
+                                              'order' => 'tag.name'));
+        $tagTypes = $this->TagType->find('all');
+        $textTypes = $this->TextType->find('all');                                              
+        $tagsById = $this->getTagsById ($tags);                         
+        $groups = $this->orderGroupsByAnnotation($this->getEventGroups($groupIds), $tagsById);        
+        $tagsDetail = $this->TagDetail->find('all'); 
+        $tagsDetailById = $this->getTagsDetailById ($tagsDetail);
+        $tagTypesById = $this->getTagsTypesById ($tagTypes);
+        $textTypesById = $this->getTextTypesById ($textTypes);
         
-        $this->set('annotationGroups', $this->getEventGroups($groupIds));
+        $this->set('orderedGroups', $groups);
+        $this->set('tagsById', $tagsById);        
+        $this->set('tagsDetailById', $tagsDetailById);
+        $this->set('tagsDetailById', $tagsDetailById);
 	}
+
+    protected function getTagsById ($tags) {
+        $tagsById = array();
+        foreach ($tags as $tag) {
+            $tagsById[$tag['Tag']['tag_id']] = $tag;
+        }
+        return $tagsById;
+    }
+    
+    protected function orderGroupsByAnnotation($groups, &$tagsById){
+        $orderedGroups = array();
+        foreach($groups as $group){
+            foreach($group['Annotation'] as $annotation){
+                $tagName = $tagsById[$annotation['tag_id']]['Tag']['name'];
+                if($tagName != 'Data' && $tagName != 'Cidade'){
+                    $orderedGroups[$annotation['tag_id']][] = $annotation;
+                }                
+            }
+        }
+        
+        return $orderedGroups;
+    }
     
     protected function getEventGroups($ids) { 
         $this->loadModel('AnnotationGroup');
