@@ -59,7 +59,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         var tdChange = createTdChange(options);
         row.append(tdLabel)
                      .append(tdValue);
-                    //.append(tdChange);
+                     .append(tdChange);
         options.table.append(row);
         options.text = '';
         
@@ -228,6 +228,20 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     function get_name_radio(){
          return "Tag_Detail_" + radio_count_tag_detail;
          
+    }
+    
+    function removeAnnotation(row) {
+        var annotationId = row.data('annotationId');
+
+        if (annotationId) {
+            $.ajax({
+                type: "POST",
+                url: URL_REMOVE_ANNOTATION,
+                data: {id: annotationId},
+                success: function (annotations) {
+                }
+            });
+        }
     }
     
     function createBtnRemoveInputProperty(options) {

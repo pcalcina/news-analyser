@@ -67,10 +67,11 @@ class DATABASE_CONFIG {
 	public $default = array(
 		'datasource' => 'Database/Sqlite',
 		'persistent' => false,
-		'database' => '/var/www/news-analyser/app/webroot/protestos.sqlite',
+		'database' => '/vagrant/news-analyser/app/webroot/protestos.sqlite',
 		'prefix' => '',
 		'encoding' => 'utf8',
 	);
+        
 
 /*	public $test = array(
 		'datasource' => 'Database/Mysql',
