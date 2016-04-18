@@ -330,43 +330,49 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     }
 </script>
 
+
 <div class="news">
-
-    <table style="width:100%">
-        <tr>
-            <td style="width:55%;">
-                <table>
-                <?php foreach ($annotationGroups as $group): ?>
-                    <tr>
-                        <td>
-                            <?php foreach ($group['Annotation'] as $annotation): ?>
-                                <?php foreach ($annotation['AnnotationDetail'] as $detail): ?>
-                                    <?php echo $detail['tag_detail_id'] . ' - ' .$detail['value'] . '<br/>' ; ?>
-                                <?php endforeach; ?>
-                            <?php endforeach; ?>
-                        </td>
-                    </tr>
+  <table style="width:100%">
+    <tr>
+      <td style="width:55%;">
+        <table>
+          <?php foreach ($orderedGroups as $tagId => $annotations): ?>
+          <tr>
+            <td>
+              <b> <?php echo $tagsById[$tagId]['Tag']['name']; ?> </b>
+              <table>
+              <tr>
+                <?php foreach ($annotations[0]['AnnotationDetail'] as $annotationDetail): ?>
+                  <td> <b><?php echo $tagsDetailById[$annotationDetail['tag_detail_id']]['TagDetail']['title']; ?> </b></td>
                 <?php endforeach; ?>
-                </table>
+              </tr>
+              <?php foreach ($annotations as $annotation): ?>
+                <tr>
+                <?php foreach ($annotation['AnnotationDetail'] as $annotationDetail): ?>
+                  <td> <?php echo $annotationDetail['value']; ?></td>
+                <?php endforeach; ?>
+                </tr>
+              <?php endforeach; ?>
+              </table>
             </td>
-
-            <td id='event' style='vertical-align:top; text-align: center'>
-                 
-                <div id='event-group-container-original' >
-
-                    <input type='hidden' value='' class='event-group-id'>
- 
-                    <table style="width:100%">
-                        <tbody class='event-group-annotations'></tbody>
-                    </table>
-
-                </div>
-                <span class='actions' style='text-align:center; padding-bottom:12px'> 
-                    &nbsp;
-                    <a href='javascript:saveEventGroups();'> Salvar </a> 
-                </span>
-            </td>
-        </tr>
-    </table>
+          </tr>
+          <?php endforeach; ?>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td id='event' style='vertical-align:top; text-align: center'>
+        <div id='event-group-container-original' >
+	  <input type='hidden' value='' class='event-group-id'>
+	    <table style="width:100%">
+	  <tbody class='event-group-annotations'></tbody>
+	  </table>
+        </div>
+	<span class='actions' style='text-align:center; padding-bottom:12px'> 
+	    &nbsp;
+	  <a href='javascript:saveEventGroups();'> Salvar </a> 
+	</span>
+      </td>
+  </table>
 </div>
 <div id="message-saving" style='display:none'>Salvando evento ...</div>
