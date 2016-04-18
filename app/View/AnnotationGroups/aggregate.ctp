@@ -22,7 +22,9 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     var radio_count_tag_detail = 1;   
     var data = "<?php echo $orderedGroups['date']; ?>";
     var cidade = "<?php echo $orderedGroups['city']; ?>";
-    
+    var URL_SAVE_ANNOTATIONS = '<?php echo Router::url(
+                                array('controller' => 'events', 
+                                      'action'     => 'saveAjax')); ?>';
     $(document).ready(function () {
         addDatePicker($('.datepicker')); 
         //addDatePicker($('.datepicker'));  
@@ -403,7 +405,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     function createInputRadioBox(title, value, nameRadio, annotationDetailId ){
  
         var radioName = nameRadio; 
-        console.log(nameRadio);
+        //console.log(nameRadio);
         var radioBox = $('<input>')
                 .prop('type', 'radio') 
                 .prop('name', radioName) 
@@ -466,8 +468,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                 value = $(input).is(':checked');
                 break;
             case "radio": 
-                value = $(input).is(':checked');
-                console.log(value);
+                value = $(input).is(':checked'); 
                 break;  
             default:  
                 value = $(input).val(); 
@@ -484,10 +485,10 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
             var input = $.find('input', tr); 
             annotationsDetail.push({
                 event_annotation_detail_id: $(tr).data('annotation_detail_id'),  
-                tag_detail_id: $(tr).data('tag_detail_id') 
-                //value : getValueAnnotationsDetails( $(input).prop('type'), input)
+                tag_detail_id: $(tr).data('tag_detail_id'), 
+                value : getValueAnnotationsDetails( $(input).prop('type'), input)
             }); 
-            console.log(getValueAnnotationsDetails( $(input).prop('type'), input));
+ 
         });
         return annotationsDetail;
     }
@@ -499,45 +500,39 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
             if ($(row).data('validValue')) { 
                 annotations.push({
                     event_annotation_id: $(row).data('EventannotationId'), 
-                    tag_id: $(row).data('selectedTag') 
-                    //annotationsDetail: getAnnotationsDetail($(row).find('table>tbody>tr')) 
+                    tag_id: $(row).data('selectedTag'), 
+                    annotationsDetail: getEventAnnotationsDetail($(row).find('table>tbody>tr')) 
                 }); 
-                getEventAnnotationsDetail($(row).find('table>tbody>tr'))
+                 
             }
         }); 
-         
         return annotations;
     }
     
     function saveEvent() {
         //$('#message-saving').show();
-        var groups = [];
+        var group = [];
 
         //$('.event-group-container').each(function (i, container) {
         console.log("Evento");
-        //console.log($('.event-group-container').find('.event-group-id').val());
-        groups.push({  
+ 
+ 
+        group.push({  
                 event_id: $('.event-group-container').find('.event-group-id').val(),
-                name : "Provicionalmente", 
+                name : cidade + "-" + data, 
                 eventAnnotations: getEventAnnotations($('.event-group-container').find('.event-group-annotations'))  
         }); 
-        
-         
-        //console.log($('.event-group-container').find('.event-group-select').select2('val'));
-        //}); 
-     
-        /*var highlights = $('#texto-principal').getHighlighter().serializeHighlights();
-
+       
         $.post(
             URL_SAVE_ANNOTATIONS,
-            {groups: groups, news_id: NEWS_ID, highlights: highlights},
+            {event: group},
             function (remoteGroups) {
                 $('.event-group-container').remove();
-                $('#message-saving').hide();  
-                fillEventGroups(remoteGroups);
+                //$('#message-saving').hide();  
+                fillEvent();
             },
             'json'      
-        ); */ 
+        );   
     } 
 
 </script>
