@@ -14,11 +14,12 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     var attributes = {}; 
     var TAGS = <?php echo json_encode($tags); ?>;
     var TagsTypesById = <?php echo json_encode($tagTypesById); ?>;
+    var TextTypesById = <?php echo json_encode($textTypesById); ?>;    
     var TAG_NAMES = {};
     for (var i = 0; i < TAGS.length; i++) {
         TAG_NAMES[TAGS[i].Tag.tag_id] = TAGS[i].Tag.name;
     }
-    
+    var radio_count_tag_detail = 1;     
     $(document).ready(function () {
         //addDatePicker($('.datepicker'));  
         fillEvent();
@@ -328,6 +329,101 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
 
         return options;
     }
+    
+        function  createInputTextBox(value, typeText )//Ejemplo typeText Number, Text, etc
+    {
+        var inputTextBox = $('<input>').val(value);
+        switch(typeText)
+        {
+            case "Number":
+                addNumberOnlyRestriction(inputTextBox);
+                break;
+            case "Date": 
+                inputTextBox.addClass('datepicker');
+                addDatePicker(inputTextBox);
+                inputTextBox.datepicker({defaultDate: new Date(NEWS_DATE)});
+                break;
+            default:
+                //addNumberOnlyRestriction(inputTextBox);
+                break; 
+        }
+ 
+        var tr = $('<tr>').append($('<td>').prop('colspan', '2').append(inputTextBox)); 
+        return  tr;
+    }
+    
+    function  createInputCheckBox(title, value ){
+ 
+        var labelAssociation = title;
+        var cbAssociation = $('<input>').prop('type', 'checkbox');
+        
+        if (value=="true") { 
+            cbAssociation.prop('checked', true); 
+        }
+  
+        var tr = $('<tr>')
+                .append($('<td>').append(cbAssociation))
+                .append($('<td>').append(labelAssociation)); 
+ 
+        return tr;
+    }
+    
+    function createInputRadioBox(title, value, nameRadio, annotationDetailId ){
+ 
+        var radioName = nameRadio; 
+        console.log(nameRadio);
+        var radioBox = $('<input>')
+                .prop('type', 'radio') 
+                .prop('name', radioName) 
+                .val(false);
+ 
+        if(value === "true") {
+            radioBox.prop('checked', true);
+        }
+        else{
+            radioBox.prop('checked', false);
+        }
+        
+        
+        var tr = $('<tr>')
+                .append($('<td>').append(radioBox).css('width', '10px'))
+                .append($('<td>').append(title).css('vertical-align', 'middle'));        
+ 
+        return tr;
+    }
+    
+    function createInputLabelledTextBox(title, value, typeText){
+ 
+        var inputTextBox = $('<input>').css('min-width', '20px').val(value);
+        
+        switch(typeText)
+        {
+            case "Number":
+                addNumberOnlyRestriction(inputTextBox);
+                break;
+            case "Date": 
+                inputTextBox.addClass('datepicker');
+                addDatePicker(inputTextBox);
+                inputTextBox.datepicker({defaultDate: new Date(NEWS_DATE)});
+                break;
+            default:
+                //addNumberOnlyRestriction(inputTextBox);
+                break; 
+        }
+   
+        var tr = $('<tr>')
+                .append($('<td>').append(title))
+                .append($('<td>').addClass('inner-td').append(inputTextBox));
+        
+        return tr;
+    }
+    
+    function addBold(element) {
+        var currentLabel = element.html();
+        element.html('<b>' + currentLabel + '</b>');
+    }
+
+
 </script>
 
 
@@ -359,20 +455,19 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
           <?php endforeach; ?>
         </table>
       </td>
-    </tr>
-    <tr>
       <td id='event' style='vertical-align:top; text-align: center'>
         <div id='event-group-container-original' >
-	  <input type='hidden' value='' class='event-group-id'>
+        <input type='hidden' value='' class='event-group-id'>
 	    <table style="width:100%">
-	  <tbody class='event-group-annotations'></tbody>
-	  </table>
+        <tbody class='event-group-annotations'></tbody>
+        </table>
         </div>
-	<span class='actions' style='text-align:center; padding-bottom:12px'> 
+        <span class='actions' style='text-align:center; padding-bottom:12px'> 
 	    &nbsp;
-	  <a href='javascript:saveEventGroups();'> Salvar </a> 
-	</span>
+        <a href='javascript:saveEventGroups();'> Salvar </a> 
+        </span>
       </td>
+   </tr>
   </table>
 </div>
 <div id="message-saving" style='display:none'>Salvando evento ...</div>
