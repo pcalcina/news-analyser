@@ -431,7 +431,14 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
               <?php foreach ($annotations as $annotation): ?>
                 <tr>
                 <?php foreach ($annotation['AnnotationDetail'] as $annotationDetail): ?>
-                  <td> <?php echo $annotationDetail['value']; ?></td>
+                  <td> <?php if( $annotationDetail['value'] === 'false'): ?> 
+                         <?php echo "&#9744;"; ?>
+                       <?php elseif($annotationDetail['value'] === 'true'): ?>
+                         <?php echo "<b>&#9745;</b>"; ?>
+                       <?php else: ?>
+                         <?php echo $annotationDetail['value']; ?>
+                       <?php endif; ?>
+                  </td>
                 <?php endforeach; ?>
                 </tr>
               <?php endforeach; ?>
