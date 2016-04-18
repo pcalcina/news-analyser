@@ -18,6 +18,8 @@ class EventAnnotationDetail extends AppModel {
  *
  * @var string
  */
-	public $primaryKey = 'y';
-
+	public $primaryKey = 'event_annotation_detail_id'; 
+        public $displayField = 'value';
+        public $actsAs = array('Containable');
+        public $belongsTo = array('EventAnnotation'); 
 }

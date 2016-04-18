@@ -498,10 +498,10 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         
         container.find('>tr').each(function (i, row) {  
             if ($(row).data('validValue')) { 
-                annotations.push({
+                annotations.push({ 
                     event_annotation_id: $(row).data('EventannotationId'), 
                     tag_id: $(row).data('selectedTag'), 
-                    annotationsDetail: getEventAnnotationsDetail($(row).find('table>tbody>tr')) 
+                    eventAnnotationsDetail: getEventAnnotationsDetail($(row).find('table>tbody>tr')) 
                 }); 
                  
             }
@@ -512,9 +512,9 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     function saveEvent() {
         //$('#message-saving').show();
         var group = [];
-
+         
         //$('.event-group-container').each(function (i, container) {
-        console.log("Evento");
+        console.log(URL_SAVE_ANNOTATIONS);
  
  
         group.push({  

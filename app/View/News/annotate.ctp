@@ -659,6 +659,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     }
     
     function saveEventGroups() {
+        console.log(URL_SAVE_ANNOTATIONS);
         $('#message-saving').show();
         var groups = [];
 

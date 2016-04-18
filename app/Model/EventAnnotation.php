@@ -18,6 +18,20 @@ class EventAnnotation extends AppModel {
  *
  * @var string
  */
-	public $primaryKey = 'y';
+	public $primaryKey = 'event_annotation_id';
 
+        
+        public $actsAs = array('Containable');
+        public $belongsTo = array('Event');
+        public $hasMany = array('EventAnnotationDetail');
+    
+        public $hasOne = array(
+         'tag' => array(
+            'className' => 'Tag',
+            'foreignKey' => false,
+            'conditions' => 'tag.tag_id = EventAnnotation.tag_id',
+            'fields' => '',
+            'order' => ''
+         )
+       );    
 }

@@ -90,78 +90,70 @@ class EventsController extends AppController {
  */ 
         
         
-	public function saveAjax(){
-            debug("porque");
+	public function saveAjax(){ 
             $this->layout = "ajax"; 
             $this->loadModel('Event');
             $this->loadModel('EventAnnotation');
             $this->loadModel('EventAnnotationDetail'); 
   
-        
+             
             if(!empty($this->request->data['event'])){
-                
+                 
                 foreach($this->request->data['event'] as $group){
                     //debug($group['event_id']);
-		    /*if(empty($group['event_id'])){
-                            $groupDate = array('AnnotationGroup' => array('creation' => date('Y-m-d H:i:s')));
-		            $this->AnnotationGroup->create();
-		            if($this->AnnotationGroup->save($groupDate)){
-           		        $groupId = $this->AnnotationGroup->id;
-		            }
+		    if(empty($group['event_id'])){
+                            //$groupDate = array('AnnotationGroup' => array('creation' => date('Y-m-d H:i:s')));
+                            unset($group['event_id']); 
+		            $this->Event->create(); 
+		            $EventInfo =  array('Event' =>  array( 'name' => $group['name']));	 
+                            $this->Event->save($EventInfo);
+                            $eventId = $this->Event->id;
 		    }
 		    else{
-		            $groupId = $group['group_id'];
-		    }
+		            $eventId = $group['event_id'];
+		    } 
+                     
 		        
-		    $annotationGroupInfo = 
-		            array('AnnotationGroup' => 
-       		                array('annotation_group_id' => $groupId,
-       		                      'news_id' => $this->request->data['news_id']));		        
-		        
-                    if(!empty($group['event_id'])){
-                        $annotationGroupInfo['AnnotationGroup']['event_id'] = $group['event_id'];
-                    }
-	            
-   		    $this->AnnotationGroup->save($annotationGroupInfo);
-		        
-		    if(!empty($group['annotations'])){
-		        foreach($group['annotations'] as $annotation){
+		    if(!empty($group['eventAnnotations'])){
+		        foreach($group['eventAnnotations'] as $eventannotation){
                             
-		            $annotation['annotation_group_id'] = $groupId; 
-			    if(empty($annotation['annotation_id'])){
-                                unset($annotation['annotation_id']);
-                                $this->Annotation->create();
-                                $this->Annotation->save(array('Annotation' => $annotation));
-                                $annotationId = $this->Annotation->id;
+		            $eventannotation['event_id'] = $eventId;  
+			    if(empty($eventannotation['event_annotation_id'])){
+                                unset($eventannotation['event_annotation_id']);
+                                $this->EventAnnotation->create();
+                                $this->EventAnnotation->save(array('EventAnnotation' => $eventannotation));
+                                $eventannotationId = $this->EventAnnotation->id;
                             }
                             else
                             {
-                                $this->Annotation->save(array('Annotation' => $annotation));
-                                $annotationId = $annotation['annotation_id'];
-                            }
-                            
-                            
-                            if(!empty($annotation['annotationsDetail'])){
-                                foreach($annotation['annotationsDetail'] as $annotationDetail){ 
+                                $this->EventAnnotation->save(array('EventAnnotation' => $eventannotation));
+                                $eventannotationId = $eventannotationId['event_annotation_id'];
+                            } 
+                            ///////////////////
+                            if(!empty($eventannotation['eventAnnotationsDetail'])){
+                                foreach($eventannotation['eventAnnotationsDetail'] as $eventAnnotationDetail){ 
                                     
-                                    $annotationDetail['annotation_id'] = $annotationId; 
-                                    if(empty($annotationDetail['annotation_detail_id'])){
-                                         unset($annotationDetail['annotation_detail_id']);
-                                         $this->AnnotationDetail->create(); 
+                                    //debug($eventannotationId);
+                                    $eventAnnotationDetail['event_annotation_id'] = $eventannotationId; 
+                                    if(empty($eventAnnotationDetail['event_annotation_detail_id'])){
+                                         unset($eventAnnotationDetail['event_annotation_detail_id']);
+                                         $this->EventAnnotationDetail->create(); 
+                                         debug($eventAnnotationDetail);
                                     } 
-                                    $this->AnnotationDetail->save(array('AnnotationDetail' => $annotationDetail));       
+                                    //debug($eventAnnotationDetail);
+                                    $this->EventAnnotationDetail->save(array('EventAnnotationDetail' => $eventAnnotationDetail));  
+                                     
                                 } 
-                            }
+                            }  
                         }
-                    }*/
+                    } 
                 }
             }
- 
-            ///Acomodar esto    
-            /*$conditions = array('conditions' => array('AnnotationGroup.news_id' => $this->request->data['news_id']),                   
-                    'contain' => array('Annotation' => array('AnnotationDetail')));
-            $annotationGroups = $this->AnnotationGroup->find('all', $conditions);
-            $this->set('eventGroups', $annotationGroups); */
+    
+            $conditions = array('conditions' => array('Event.event_id' => $eventId),                   
+                    'contain' => array('EventAnnotation' => array('EventAnnotationDetail'))); 
+            $annotationGroups = $this->Event->find('all', $conditions); 
+            $this->set('eventGroups', $annotationGroups);  
             
 	}
         
