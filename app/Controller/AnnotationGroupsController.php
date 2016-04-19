@@ -106,7 +106,16 @@ class AnnotationGroupsController extends AppController {
         }
         return $tagsTypesById;
     }    
-        
+    
+    protected function getEvent($id) { 
+        $this->loadModel('Event');
+        $this->loadModel('EventAnnotation');
+        $this->loadModel('EventAnnotationDetail'); 
+   
+        return $this->Event->find('all', 
+                 array('conditions' => array('Event.event_id' => $id),                   
+                    'contain' => array('EventAnnotation' => array('EventAnnotationDetail'))));
+    }    
     public function aggregate() {
         $this->loadModel('Tag');
         $this->loadModel('TagDetail');
@@ -118,7 +127,7 @@ class AnnotationGroupsController extends AppController {
         $tags = $this->Tag->find('all', array('contain' => array('TagDetail' ),
                                               'order' => 'tag.name'));
      
-        $eventsIds= $this->getEventIds ($groupIds); 
+        $eventId= $this->getEventId ($groupIds);  
         $tagTypes = $this->TagType->find('all');
         $textTypes = $this->TextType->find('all');                                              
         $tagsById = $this->getTagsById ($tags);                         
@@ -127,6 +136,7 @@ class AnnotationGroupsController extends AppController {
         $tagsDetailById = $this->getTagsDetailById ($tagsDetail);
         $tagTypesById = $this->getTagsTypesById ($tagTypes);
         $textTypesById = $this->getTextTypesById ($textTypes);
+        $tagsDetailById = $this->getTagsDetailById ($tagsDetail);
         $this->set('tags', $tags);
         $this->set('orderedGroups', $orderedGroups);
         $this->set('tagsById', $tagsById);        
@@ -134,17 +144,31 @@ class AnnotationGroupsController extends AppController {
         $this->set('tagTypesById', $tagTypesById);
         $this->set('textTypesById', $textTypesById);
         $this->set('groupIds', $groupIds);
-        $this->set('eventsIds', $eventsIds);
+        $this->set('eventId', $eventId);
+        $this->set('saved_event', $this->getEvent($eventId));
+        
+         
+        $buff = array(); 
+        
     }
     
-    protected function getEventIds ($groupIds)
+    protected function getEventId ($groupIds)
     {
         $AnnotationGroups= $this->AnnotationGroup->find('all', array('conditions' => array('annotation_group_id' => $groupIds)));
         $EventsIds = array();
+        $count = 0;
         foreach ($AnnotationGroups as $annotationGroup) {
-            $EventsIds[$annotationGroup['AnnotationGroup']['annotation_group_id']]=$annotationGroup['AnnotationGroup']['event_id']; 
+            //$EventsIds[$annotationGroup['AnnotationGroup']['annotation_group_id']]=$annotationGroup['AnnotationGroup']['event_id']; 
+            $EventsIds[$count]=$annotationGroup['AnnotationGroup']['event_id']; 
+            $count =$count+1;
+        }  
+        foreach ($EventsIds as $EventsId) {
+            if($EventsId!=$EventsIds[0])
+            {
+                return null;
+            }
         }
-        return $EventsIds;
+        return $EventsIds[0];
     }
     protected function getTagsById ($tags) {
         $tagsById = array();

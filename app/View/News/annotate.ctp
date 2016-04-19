@@ -169,7 +169,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                 var annotation = group.Annotation[i];
                 addInputPropertyNew(annotation,{text: annotation.value,
                     selectedTag: annotation.tag_id,
-                    annotationId: annotation.annotation_detail_id,
+                    annotationId: annotation.annotation_id,
                     table: $('.event-group-annotations', container)});//lleno
                 /*addInputProperty({text: annotation.value,
                     selectedTag: annotation.tag_id,

@@ -13,12 +13,14 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
 <script>
     var attributes = {}; 
     var TAGS = <?php echo json_encode($tags); ?>;
-    var TagsTypesById = <?php echo json_encode($tagTypesById); ?>;
-    var TextTypesById = <?php echo json_encode($textTypesById); ?>;    
+    var TagDetail = <?php echo json_encode($tagsDetailById); ?> 
+    var TextTypesById = <?php echo json_encode($textTypesById); ?>; 
     var TAG_NAMES = {};
     for (var i = 0; i < TAGS.length; i++) {
         TAG_NAMES[TAGS[i].Tag.tag_id] = TAGS[i].Tag.name;
     }
+      
+    var TagsTypesById = <?php echo json_encode($tagTypesById); ?>;
     var radio_count_tag_detail = 1;   
     var data = "<?php echo $orderedGroups['date']; ?>";
     var cidade = "<?php echo $orderedGroups['city']; ?>";
@@ -26,12 +28,12 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                                 array('controller' => 'events', 
                                       'action'     => 'saveAjax')); ?>';
     var groupIds = <?php echo json_encode($groupIds); ?>;
-    
-    var eventsIds = <?php echo json_encode($eventsIds); ?>;
+    var eventId = <?php echo json_encode($eventId); ?>;
+    var saved_event = <?php echo json_encode($saved_event); ?>;
     $(document).ready(function () {
         addDatePicker($('.datepicker')); 
         //addDatePicker($('.datepicker'));  
-        fillEvent();
+        fillEvent(saved_event);
         
         //fillEvent(event);
         //fillEventGroups(savedEventGroups); 
@@ -57,7 +59,8 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         });
     }
     
-    function fillEvent(){ 
+    function fillEvent(events){ 
+        console.log("fillEvent");
         var container = $('#event-group-container-original');
         container.removeAttr('id');
         container.addClass('event-group-container');
@@ -70,6 +73,25 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                         //,selectedTagName: tag.Tag.name
             }); 
         }); 
+        //console.log(eventId);
+        if(eventId!= null)
+        {
+            console.log("Editar");
+            var event = events[0];
+            for (var i in event.EventAnnotation) { 
+                var annotation = event.EventAnnotation[i];
+                addInputPropertyNew(annotation,{ selectedTag: annotation.tag_id, table: $('.event-group-annotations', container)});
+                //console.log(annotation);
+            }
+        }
+        else
+        { 
+            
+            console.log("Solo poner ciudad  y data");
+            //addInputPropertyNew(annotation,{ selectedTag: annotation.tag_id, table: $('.event-group-annotations', container)});
+        
+        }    
+ 
         
     }
              
@@ -84,6 +106,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         var tdLabel = createTdLabel(options); 
         var tdValue = createTdValue(options);
         var tdChange = createTdChange(options);
+         
         row.append(tdLabel)
                      .append(tdValue)  
                      .append(tdChange);
@@ -112,6 +135,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                      
                     options.emptyProperty = false;
                     addInputPropertyNew(annotation,options);//Vacio
+                     
                 });
         tdValue.append('NA&nbsp;');
         tdValue.append(btnChangeValue);
@@ -177,7 +201,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
             row.data('clones', []);
                
             var btnRemove = createBtnRemoveInputProperty(options);
-            console.log("Criando btnRemove");
+             
             btnRemove.addClass('btnRemove');
             btnRemove.click(function () {  
                 if (row.data('clones').length === 0) {
@@ -185,19 +209,19 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                     row.find('.value').replaceWith(createTdValue(options));
                     row.find('.change').replaceWith(createTdChange(options));
                     row.data('validValue', false);
-                    console.log("rem1");
+                     
                     removeAnnotation(row);
                 }
                 else {
                     var oldRow = row.data('clones').pop();
-                    console.log("rem2");
+                     
                     removeAnnotation(oldRow);
                     oldRow.remove();
                 }
             });
       
             var tdValue = createInputPropertyNew(annotation,options.text, options.selectedTag,options.EventannotationId);
-            console.log(tdValue);
+ 
             addTagRowToTableNew(options,tdValue,btnRemove,row,options.table); 
  
             //if (options.annotationId) {
@@ -222,14 +246,14 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         if(annotation)
         {
              
-            $(annotation.AnnotationDetail).each(function (i, annotationDetail) {
+            $(annotation.EventAnnotationDetail).each(function (i, eventAnnotationDetail) {
             
-                var currentTagDetail = TagDetail[annotationDetail.tag_detail_id];
+                var currentTagDetail = TagDetail[eventAnnotationDetail.tag_detail_id];
                 var currentTagDetail2 = currentTagDetail.TagDetail;
-                var value = annotationDetail.value;
+                var value = eventAnnotationDetail.value;
                 //var nameClass = annotationDetail.annotation_detail_id + "-" + currentTagDetail.TagDetail.tag_type_id;
-                var tr = createInputPropertyDetailNew(currentTagDetail2,value,annotation.annotation_id, annotationDetail.annotation_detail_id); 
-                tr.data('annotation_detail_id',annotationDetail.annotation_detail_id);
+                var tr = createInputPropertyDetailNew(currentTagDetail2,value,annotation.event_annotation_id, eventAnnotationDetail.event_annotation_detail_id); 
+                tr.data('event_annotation_detail_id',eventAnnotationDetail.event_annotation_detail_id);
                 table.append(tr); 
             });  
         }
@@ -514,11 +538,11 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     }
     
     function saveEvent() {
-        //$('#message-saving').show();
+        $('#message-saving').show();
         var group = [];
          
         //$('.event-group-container').each(function (i, container) {
-        console.log(URL_SAVE_ANNOTATIONS);
+        //console.log(URL_SAVE_ANNOTATIONS);
  
  
         group.push({  
@@ -532,8 +556,8 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
             {event: group, groupsIds: groupIds},
             function (remoteGroups) {
                 $('.event-group-container').remove();
-                //$('#message-saving').hide();  
-                fillEvent();
+                $('#message-saving').hide();  
+                fillEvent(remoteGroups);
             },
             'json'      
         );   

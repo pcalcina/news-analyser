@@ -92,6 +92,7 @@ class EventsController extends AppController {
         
 	public function saveAjax(){ 
             $this->layout = "ajax"; 
+            $this->loadModel('AnnotationGroup');
             $this->loadModel('Event');
             $this->loadModel('EventAnnotation');
             $this->loadModel('EventAnnotationDetail'); 
@@ -112,14 +113,16 @@ class EventsController extends AppController {
 		    else{
 		            $eventId = $group['event_id'];
 		    } 
-                    
+                     
+                     
                     if(!empty($this->request->data['groupsIds']))
                     {
-                        foreach($this->request->data['groupsIds'] as $groupId){
-                         $annotationGroupInfo = array('AnnotationGroup' => array('annotation_group_id' => $groupId, 'event_id' => $eventId ));
-                         $this->AnnotationGroup->save($annotationGroupInfo);
+                        foreach($this->request->data['groupsIds'] as $groupId){ 
+                            $annotationGroupInfo = array('AnnotationGroup' => array('annotation_group_id' => $groupId, 'event_id' => $eventId ));
+                            //debug($annotationGroupInfo);
+                            $this->AnnotationGroup->save($annotationGroupInfo);
                         }
-                    }
+                    } 
                 
 		    if(!empty($group['eventAnnotations'])){
 		        foreach($group['eventAnnotations'] as $eventannotation){
@@ -158,11 +161,13 @@ class EventsController extends AppController {
                 
                  
             }
+             
     
+        
             $conditions = array('conditions' => array('Event.event_id' => $eventId),                   
                     'contain' => array('EventAnnotation' => array('EventAnnotationDetail'))); 
-            $annotationGroups = $this->Event->find('all', $conditions); 
-            $this->set('eventGroups', $annotationGroups);  
+            $events = $this->Event->find('all', $conditions); 
+            $this->set('event', $events);  
             
 	}
         

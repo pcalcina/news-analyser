@@ -1,1 +1,1 @@
-<?php echo json_encode($eventGroups); ?>
+<?php echo json_encode($event); ?>
