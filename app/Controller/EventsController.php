@@ -81,95 +81,65 @@ class EventsController extends AppController {
 		}
 	}
 
-/**
- * delete method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */ 
+    public function saveAjax(){ 
+        $this->layout = "ajax"; 
+        $this->loadModel('AnnotationGroup');
+        $this->loadModel('Event');
+        $this->loadModel('EventAnnotation');
+        $this->loadModel('EventAnnotationDetail'); 
         
-        
-	public function saveAjax(){ 
-            $this->layout = "ajax"; 
-            $this->loadModel('AnnotationGroup');
-            $this->loadModel('Event');
-            $this->loadModel('EventAnnotation');
-            $this->loadModel('EventAnnotationDetail'); 
-  
-             
-            if(!empty($this->request->data['event'])){
-                 
-                foreach($this->request->data['event'] as $group){
-                    //debug($group['event_id']);
-		    if(empty($group['event_id'])){
-                            //$groupDate = array('AnnotationGroup' => array('creation' => date('Y-m-d H:i:s')));
-                            unset($group['event_id']); 
-		            $this->Event->create(); 
-		            $EventInfo =  array('Event' =>  array( 'name' => $group['name']));	 
-                            $this->Event->save($EventInfo);
-                            $eventId = $this->Event->id;
-		    }
-		    else{
-		            $eventId = $group['event_id'];
-		    } 
-                     
-                     
-                    if(!empty($this->request->data['groupsIds']))
-                    {
-                        foreach($this->request->data['groupsIds'] as $groupId){ 
-                            $annotationGroupInfo = array('AnnotationGroup' => array('annotation_group_id' => $groupId, 'event_id' => $eventId ));
-                            //debug($annotationGroupInfo);
-                            $this->AnnotationGroup->save($annotationGroupInfo);
-                        }
-                    } 
-                
-		    if(!empty($group['eventAnnotations'])){
-		        foreach($group['eventAnnotations'] as $eventannotation){
-                            
-		            $eventannotation['event_id'] = $eventId;  
-			    if(empty($eventannotation['event_annotation_id'])){
-                                unset($eventannotation['event_annotation_id']);
-                                $this->EventAnnotation->create();
-                                $this->EventAnnotation->save(array('EventAnnotation' => $eventannotation));
-                                $eventannotationId = $this->EventAnnotation->id;
-                            }
-                            else
-                            {
-                                $this->EventAnnotation->save(array('EventAnnotation' => $eventannotation));
-                                $eventannotationId = $eventannotation['event_annotation_id'];
-                            } 
-                            ///////////////////
-                            if(!empty($eventannotation['eventAnnotationsDetail'])){
-                                foreach($eventannotation['eventAnnotationsDetail'] as $eventAnnotationDetail){ 
-                                    
-                                    //debug($eventannotationId);
-                                    $eventAnnotationDetail['event_annotation_id'] = $eventannotationId; 
-                                    if(empty($eventAnnotationDetail['event_annotation_detail_id'])){
-                                         unset($eventAnnotationDetail['event_annotation_detail_id']);
-                                         $this->EventAnnotationDetail->create(); 
-                                         //debug($eventAnnotationDetail);
-                                    } 
-                                    //debug($eventAnnotationDetail);
-                                    $this->EventAnnotationDetail->save(array('EventAnnotationDetail' => $eventAnnotationDetail));  
-                                     
-                                } 
-                            }  
-                        }
-                    } 
+        if(!empty($this->request->data['event'])){
+            foreach($this->request->data['event'] as $group){
+                if(empty($group['event_id'])){
+                    unset($group['event_id']); 
+                    $this->Event->create(); 
+                    $EventInfo =  array('Event' =>  array( 'name' => $group['name']));	 
+                    $this->Event->save($EventInfo);
+                    $eventId = $this->Event->id;
                 }
-                
-                 
+                else{
+                    $eventId = $group['event_id'];
+                } 
+                         
+                if(!empty($this->request->data['groupsIds'])){
+                    foreach($this->request->data['groupsIds'] as $groupId){ 
+                        $annotationGroupInfo = array('AnnotationGroup' => array('annotation_group_id' => $groupId, 'event_id' => $eventId ));
+                        $this->AnnotationGroup->save($annotationGroupInfo);
+                    }
+                } 
+                    
+                if(!empty($group['eventAnnotations'])){
+                    foreach($group['eventAnnotations'] as $eventannotation){
+                        $eventannotation['event_id'] = $eventId;  
+                        if(empty($eventannotation['event_annotation_id'])){
+                            unset($eventannotation['event_annotation_id']);
+                            $this->EventAnnotation->create();
+                            $this->EventAnnotation->save(array('EventAnnotation' => $eventannotation));
+                            $eventannotationId = $this->EventAnnotation->id;
+                        }
+                        else {
+                            $this->EventAnnotation->save(array('EventAnnotation' => $eventannotation));
+                            $eventannotationId = $eventannotation['event_annotation_id'];
+                        } 
+                        if(!empty($eventannotation['eventAnnotationsDetail'])){
+                            foreach($eventannotation['eventAnnotationsDetail'] as $eventAnnotationDetail){ 
+                                $eventAnnotationDetail['event_annotation_id'] = $eventannotationId; 
+                                if(empty($eventAnnotationDetail['event_annotation_detail_id'])){
+                                    unset($eventAnnotationDetail['event_annotation_detail_id']);
+                                    $this->EventAnnotationDetail->create(); 
+                                } 
+                                $this->EventAnnotationDetail->save(array('EventAnnotationDetail' => $eventAnnotationDetail));  
+                            } 
+                        }  
+                    }
+                } 
             }
-             
-    
-        
-            $conditions = array('conditions' => array('Event.event_id' => $eventId),                   
-                    'contain' => array('EventAnnotation' => array('EventAnnotationDetail'))); 
-            $events = $this->Event->find('all', $conditions); 
-            $this->set('event', $events);  
-            
-	}
+        }
+        $conditions = array('conditions' => array('Event.event_id' => $eventId),                   
+                'contain' => array('EventAnnotation' => array('EventAnnotationDetail'))); 
+        $events = $this->Event->find('all', $conditions); 
+        $this->set('event', $events);  
+    }
         
 	public function delete($id = null) {
 		$this->Event->id = $id;
