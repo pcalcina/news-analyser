@@ -137,7 +137,8 @@ class EventsController extends AppController {
                             else
                             {
                                 $this->EventAnnotation->save(array('EventAnnotation' => $eventannotation));
-                                $eventannotationId = $eventannotation['event_annotation_id'];
+                                //$eventannotationId = $eventannotation['event_annotation_id'];
+                                $eventannotationId = $eventannotationId['event_annotation_id'];
                             } 
                             ///////////////////
                             if(!empty($eventannotation['eventAnnotationsDetail'])){
