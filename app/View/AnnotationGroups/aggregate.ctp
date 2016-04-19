@@ -579,15 +579,21 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
           <?php foreach ($orderedGroups['orderedGroups'] as $tagId => $annotations): ?>
           <tr>
             <td>
-              <b> <?php echo $tagsById[$tagId]['Tag']['name']; ?> </b>
+              <center><h3> <?php echo $tagsById[$tagId]['Tag']['name']; ?> </h3></center>
               <table>
               <tr>
+                <td>Annotation Group</td>
                 <?php foreach ($annotations[0]['AnnotationDetail'] as $annotationDetail): ?>
                   <td> <b><?php echo $tagsDetailById[$annotationDetail['tag_detail_id']]['TagDetail']['title']; ?> </b></td>
                 <?php endforeach; ?>
               </tr>
               <?php foreach ($annotations as $annotation): ?>
                 <tr>
+                  <td>
+                      <?php echo $this->Html->link(__($annotation['annotation_group_id']),
+                            array('controller' => 'news', 'action' => 'annotate',
+                      $annotation['news_id'])); ?>
+                  </td>
                 <?php foreach ($annotation['AnnotationDetail'] as $annotationDetail): ?>
                   <td> <?php if( $annotationDetail['value'] === 'false'): ?> 
                          <?php echo "&#9744;"; ?>
