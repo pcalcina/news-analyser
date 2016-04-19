@@ -87,7 +87,24 @@ class EventAnnotationsController extends AppController {
  * @throws NotFoundException
  * @param string $id
  * @return void
+ * 
+ * 
  */
+          public function deleteAjax(){
+		//$this->layout = "ajax";
+                debug("llega");
+		$EventAnnotationId = $this->request->data['id'];
+		$this->EventAnnotation->id = $this->request->data['id'];
+                $this->request->onlyAllow('post', 'delete');
+                
+		if ($this->EventAnnotation->exists()) { 
+                     
+                    $this->loadModel('EventAnnotationDetail');
+                    $this->EventAnnotationDetail->deleteAll(array('EventAnnotationDetail.event_annotation_id' => $EventAnnotationId)); 
+		    $this->EventAnnotation->delete(); 
+                } 
+	} 
+        
 	public function delete($id = null) {
 		$this->EventAnnotation->id = $id;
 		if (!$this->EventAnnotation->exists()) {
