@@ -555,6 +555,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
             URL_SAVE_ANNOTATIONS,
             {event: group, groupsIds: groupIds},
             function (remoteGroups) {
+                console.log(remoteGroups);
                 $('.event-group-container').remove();
                 $('#message-saving').hide();  
                 fillEvent(remoteGroups);

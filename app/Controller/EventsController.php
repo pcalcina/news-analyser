@@ -137,7 +137,7 @@ class EventsController extends AppController {
                             else
                             {
                                 $this->EventAnnotation->save(array('EventAnnotation' => $eventannotation));
-                                $eventannotationId = $eventannotationId['event_annotation_id'];
+                                $eventannotationId = $eventannotation['event_annotation_id'];
                             } 
                             ///////////////////
                             if(!empty($eventannotation['eventAnnotationsDetail'])){
@@ -148,7 +148,7 @@ class EventsController extends AppController {
                                     if(empty($eventAnnotationDetail['event_annotation_detail_id'])){
                                          unset($eventAnnotationDetail['event_annotation_detail_id']);
                                          $this->EventAnnotationDetail->create(); 
-                                         debug($eventAnnotationDetail);
+                                         //debug($eventAnnotationDetail);
                                     } 
                                     //debug($eventAnnotationDetail);
                                     $this->EventAnnotationDetail->save(array('EventAnnotationDetail' => $eventAnnotationDetail));  
