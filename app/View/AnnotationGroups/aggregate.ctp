@@ -73,10 +73,11 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                         //,selectedTagName: tag.Tag.name
             }); 
         }); 
-        //console.log(eventId);
-        if(eventId!= null)
+
+        if(events.length > 0)
         {
             console.log("Editar");
+            console.log(events);
             var event = events[0];
             for (var i in event.EventAnnotation) { 
                 var annotation = event.EventAnnotation[i];
@@ -253,7 +254,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                 var value = eventAnnotationDetail.value;
                 //var nameClass = annotationDetail.annotation_detail_id + "-" + currentTagDetail.TagDetail.tag_type_id;
                 var tr = createInputPropertyDetailNew(currentTagDetail2,value,annotation.event_annotation_id, eventAnnotationDetail.event_annotation_detail_id); 
-                tr.data('event_annotation_detail_id',eventAnnotationDetail.event_annotation_detail_id);
+                tr.data('event_annotation_detail_id', eventAnnotationDetail.event_annotation_detail_id);
                 table.append(tr); 
             });  
         }
@@ -512,7 +513,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         trs.each(function(i,tr){ 
             var input = $.find('input', tr); 
             annotationsDetail.push({
-                event_annotation_detail_id: $(tr).data('annotation_detail_id'),  
+                event_annotation_detail_id: $(tr).data('event_annotation_detail_id'),  
                 tag_detail_id: $(tr).data('tag_detail_id'), 
                 value : getValueAnnotationsDetails( $(input).prop('type'), input)
             }); 
@@ -546,7 +547,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
  
  
         group.push({  
-                event_id: $('.event-group-container').find('.event-group-id').val(),
+                event_id: eventId,
                 name : cidade + "-" + data, 
                 eventAnnotations: getEventAnnotations($('.event-group-container').find('.event-group-annotations'))  
         }); 
@@ -556,7 +557,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
             {event: group, groupsIds: groupIds},
             function (remoteGroups) {
                 console.log(remoteGroups);
-                $('.event-group-container').remove();
+                //$('.event-group-container').empty();
                 $('#message-saving').hide();  
                 fillEvent(remoteGroups);
             },
@@ -604,7 +605,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
       </td>
       <td id='event' style='vertical-align:top; text-align: center'>
         <div id='event-group-container-original' >
-        <input type='hidden' value='' class='event-group-id'>
+        <input type='hidden' value='<?php echo $eventId; ?>' class='event-group-id'>
 	    <table style="width:100%">
         <tbody class='event-group-annotations'></tbody>
         </table>
