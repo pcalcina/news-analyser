@@ -88,9 +88,11 @@ class EventsController extends AppController {
         $this->loadModel('EventAnnotation');
         $this->loadModel('EventAnnotationDetail'); 
         
+         
         if(!empty($this->request->data['event'])){
             foreach($this->request->data['event'] as $group){
                 if(empty($group['event_id'])){
+                    debug("nuevo evento");
                     unset($group['event_id']); 
                     $this->Event->create(); 
                     $EventInfo =  array('Event' =>  array( 'name' => $group['name']));	 
@@ -98,6 +100,7 @@ class EventsController extends AppController {
                     $eventId = $this->Event->id;
                 }
                 else{
+                    debug("antiguo evento");
                     $eventId = $group['event_id'];
                 } 
                          
@@ -140,21 +143,7 @@ class EventsController extends AppController {
         $events = $this->Event->find('all', $conditions); 
         $this->set('event', $events);  
     }
-    
-    public function deleteAjax(){
-		$this->layout = "ajax";
-		$annotationId = $this->request->data['id'];
-		$this->Annotation->id = $this->request->data['id'];
-                $this->request->onlyAllow('post', 'delete');
-                
-		if ($this->Annotation->exists()) { 
-                     
-                    $this->loadModel('EventAnnotationDetail');
-                    $this->AnnotationDetail->deleteAll(array('EventAnnotationDetail.event_annotation_id' => $annotationId)); 
-		    $this->Annotation->delete(); 
-                }
-	}
-        
+      
 	public function delete($id = null) {
 		$this->Event->id = $id;
 		if (!$this->Event->exists()) {
