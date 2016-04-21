@@ -2,25 +2,9 @@
 
 App::uses('AppModel', 'Model', 'Tag', 'Source');
 
-/**
- * News Model
- *
- * @property Annotations $annotations
- */
 class News extends AppModel {
 
-    /**
-     * Primary key field
-     *
-     * @var string
-     */
     public $primaryKey = 'news_id';
-
-    /**
-     * Display field
-     *
-     * @var string
-     */
     public $displayField = 'title';
     public $hasOne = array(
         'Source' => array(
@@ -36,27 +20,4 @@ class News extends AppModel {
             'foreignKey' => false
         )
     );
-
-    //The Associations below have been created with all possible keys, those that are not needed can be removed
-
-    /**
-     * hasMany associations
-     *
-     * @var array
-     */
-    /* public $hasMany = array(
-      'annotations' => array(
-      'className' => 'Annotation',
-      'foreignKey' => 'news_id',
-      'dependent' => false,
-      'conditions' => 'annotations.news_id = News.news_id',
-      'fields' => '',
-      'order' => '',
-      'limit' => '',
-      'offset' => '',
-      'exclusive' => '',
-      'finderQuery' => '',
-      'counterQuery' => ''
-      )
-      ); */
 }
