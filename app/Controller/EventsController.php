@@ -143,6 +143,13 @@ class EventsController extends AppController {
         $events = $this->Event->find('all', $conditions); 
         $this->set('event', $events);  
     }
+    
+    public function export_to_csv() {
+        //$this->response->download("eventos.csv");
+        $this->layout = "ajax"; 
+        $this->set('tagsDetailById', $tagsDetailById);
+        $this->set('events', $this->Event->exportAsTable());
+    }    
       
 	public function delete($id = null) {
 		$this->Event->id = $id;
@@ -156,4 +163,5 @@ class EventsController extends AppController {
 			$this->Session->setFlash(__('The event could not be deleted. Please, try again.'));
 		}
 		return $this->redirect(array('action' => 'index'));
-	}}
+	}
+}

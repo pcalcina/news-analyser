@@ -1,31 +1,35 @@
 <?php
-App::uses('AppModel', 'Model');
-/**
- * Event Model
- *
- */
+App::uses('AppModel', 'Model', 'TagDetail');
+
 class Event extends AppModel {
-
-/**
- * Use table
- *
- * @var mixed False or table name
- */
 	public $useTable = 'event';
-
-/**
- * Primary key field
- *
- * @var string
- */
 	public $primaryKey = 'event_id';
-
-/**
- * Display field
- *
- * @var string
- */
 	public $displayField = 'name';
-        public $actsAs = array('Containable');
-        public $hasMany = array('EventAnnotation');
+    public $actsAs = array('Containable');
+    public $hasMany = array('EventAnnotation');
+    private $TagDetail;
+    
+    public function __construct(){
+        $this->TagDetail = ClassRegistry::init('TagDetail');
+    }
+    
+    public function exportAsTable(){
+        $events = array();
+        $q = "SELECT event_annotation.event_id, event_annotation_detail.tag_detail_id, 
+                  event_annotation.event_annotation_id, event_annotation_detail.value 
+              FROM event_annotation_detail 
+              LEFT JOIN event_annotation ON 
+                  event_annotation.event_annotation_id = event_annotation_detail.event_annotation_id";
+        $raw = $this->query($q);
+        
+        $tagsDetailById = $this->TagDetail->getTagsDetailById();
+        
+        foreach($raw as $detail){
+            $eventId = $detail['event_annotation']['event_id'];
+            $tagDetailId   = $detail['event_annotation_detail']['tag_detail_id'];
+            $annotationValue = $detail['event_annotation_detail']['value'];
+            $events[$eventId][$tagDetailId][] = $annotationValue;
+        }
+        return $events;
+    }
 }
