@@ -5,8 +5,6 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
 <?php $this->Html->script('jquery.textHighlighter.js',array('inline'=>false)); ?>
 <?php $this->Html->script('jquery-ui-1.10.4.custom.min.js',array('inline'=>false)); ?>
 <?php $this->Html->script('datepicker-pt-BR.js',array('inline'=>false)); ?>
-
-<?php //$this->Html->script('jquery.tablesorter.js',array('inline'=>false)); ?>
 <?php $this->Html->script('tablesorter2.js',array('inline'=>false)); ?>
 <?php $this->Html->script('tablesorter.widgets.js',array('inline'=>false)); ?>
 

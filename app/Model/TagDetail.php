@@ -5,7 +5,7 @@ class TagDetail extends AppModel {
     public $primaryKey = 'tag_detail_id';
     public $displayField = 'title';
     public $actsAs = array('Containable');
- 
+
     public function getTagsDetailById () {
         $tagsDetail = $this->find('all');
         $tagsDetailById = array();

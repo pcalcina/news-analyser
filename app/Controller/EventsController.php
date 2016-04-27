@@ -1,37 +1,14 @@
 <?php
 App::uses('AppController', 'Controller');
-/**
- * Events Controller
- *
- * @property Event $Event
- * @property PaginatorComponent $Paginator
- */
 class EventsController extends AppController {
 
-/**
- * Components
- *
- * @var array
- */
 	public $components = array('Paginator');
 
-/**
- * index method
- *
- * @return void
- */
 	public function index() {
 		$this->Event->recursive = 0;
 		$this->set('events', $this->Paginator->paginate());
 	}
 
-/**
- * view method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
 	public function view($id = null) {
 		if (!$this->Event->exists($id)) {
 			throw new NotFoundException(__('Invalid event'));
@@ -40,11 +17,6 @@ class EventsController extends AppController {
 		$this->set('event', $this->Event->find('first', $options));
 	}
 
-/**
- * add method
- *
- * @return void
- */
 	public function add() {
 		if ($this->request->is('post')) {
 			$this->Event->create();
@@ -57,13 +29,6 @@ class EventsController extends AppController {
 		}
 	}
 
-/**
- * edit method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
 	public function edit($id = null) {
 		if (!$this->Event->exists($id)) {
 			throw new NotFoundException(__('Invalid event'));
@@ -147,8 +112,16 @@ class EventsController extends AppController {
     public function export_to_csv() {
         //$this->response->download("eventos.csv");
         $this->layout = "ajax"; 
+        $this->loadModel('TagDetail');
+        $tagsDetailById = $this->TagDetail->getTagsDetailById();        
         $this->set('tagsDetailById', $tagsDetailById);
-        $this->set('events', $this->Event->exportAsTable());
+        $events = $this->Event->exportAsTable();
+        $this->set('events', $events);
+        $maxElements = array();
+        foreach($events as $eventId => $event){
+            $maxElements[$eventId] = count($event);
+        }
+        $this->set('maxElements', $maxElements);
     }    
       
 	public function delete($id = null) {
