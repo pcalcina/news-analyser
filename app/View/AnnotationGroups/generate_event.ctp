@@ -56,9 +56,9 @@
             URL_CREATE_EVENT,
             {groupIds: groupIds, name: name},
             function (link) {  
-               location.replace(link);
+               location.replace(link);  
             },
-            'json'      
+            'text'      
             );   
         }
         else

@@ -175,22 +175,27 @@ class EventsController extends AppController {
         $this->layout = "ajax";  
         $this->loadModel('AnnotationGroup');
         $this->loadModel('Event');
-        
-        //debug($this->request->data['name']);
-        debug($this->request->data['groupIds']);
+         
         $this->Event->create(); 
         $EventInfo =  array('Event' =>  array( 'name' => $this->request->data['name']));
         $this->Event->save($EventInfo);
-        $eventId = $this->Event->id;
-        debug($eventId);
+        $eventId = $this->Event->id; 
         foreach($this->request->data['groupIds'] as $groupId){ 
             $annotationGroupInfo = array('AnnotationGroup' => array('annotation_group_id' => $groupId, 'event_id' => $eventId ));
             $this->AnnotationGroup->save($annotationGroupInfo);
         } 
-        $link = Router::connect(
+        /*$link = Router::connect(
             'URL',
-            array('controller' => 'events', 'action' => 'edit')
-        );  
+            array('controller' => 'events', 'action' => 'index')
+        ); */ 
+        
+        $link = Router::url(array(
+            'controller' => 'events',
+            'action' => 'edit',  
+            $eventId
+        ));
+        
+        //debug($link);
         $this->set('link', $link);   
     }
     

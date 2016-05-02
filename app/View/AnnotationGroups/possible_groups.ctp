@@ -14,7 +14,7 @@
 <table>
     <tr>
         <th>News</th> 
-        <th>Chave</th>
+        <th>Name</th>
         <th>Data</th>
         <th>Cidade</th>
         <th class="actions"> </th>
@@ -26,7 +26,7 @@
                 array('controller' => 'news', 'action' => 'annotate',
                       $candidate[0]['news_id'])); ?>
         </td>  
-        <td><?php echo $key ?></td> 
+        <td><?php echo $candidate[0]['city'] ?> - <?php echo $candidate[0]['date'] ?></td> 
         <td><?php echo $candidate[0]['date'] ?></td> 
         <td><?php echo $candidate[0]['city'] ?></td>  
         <td class="actions"><?php echo $this->Html->link(__('Agrupar'),

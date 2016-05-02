@@ -1,1 +1,1 @@
-<?php echo json_encode($link); ?>
+<?php echo $link; ?>
