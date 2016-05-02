@@ -262,6 +262,7 @@ class EventsController extends AppController {
     }    
       
 	public function delete($id = null) {
+            $this->loadModel('AnnotationGroup');
 		$this->Event->id = $id;
 		if (!$this->Event->exists()) {
 			throw new NotFoundException(__('Invalid event'));
@@ -272,6 +273,11 @@ class EventsController extends AppController {
 		} else {
 			$this->Session->setFlash(__('The event could not be deleted. Please, try again.'));
 		}
+                $groups = $this->AnnotationGroup->find('all', array('conditions' => array('AnnotationGroup.event_id' => $id))); 
+                foreach($groups as $group){ 
+                     $annotationGroupInfo = array('AnnotationGroup' => array('annotation_group_id' => $group['AnnotationGroup']['annotation_group_id'], 'event_id' => NULL ));
+                     $this->AnnotationGroup->save($annotationGroupInfo);
+                } 
 		return $this->redirect(array('action' => 'index'));
         }
 }        
