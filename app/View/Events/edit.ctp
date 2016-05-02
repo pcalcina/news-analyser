@@ -567,10 +567,17 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         );   
     } 
 
-</script>
-
- 
-<h2><?php echo "Evento {$orderedGroups['city']} - {$orderedGroups['date']}"; ?></h2>
+</script> 
+<div class="actions">
+    <ul>
+        <li><?php echo $this->Html->link(__('< Voltar'), 
+    		            $this->request->referer()); ?>
+        </li>
+	    <li style='vertical-align:middle !important;'  ><?php echo $this->Html->link(__('List Eventos'), array('controller' => 'events', 'action' => 'index')); ?>
+        </li>
+    </ul>
+</div>  
+<div class = ' index'><h2><?php echo "Evento {$orderedGroups['city']} - {$orderedGroups['date']}"; ?></h2></div> 
 <div class="news">
     <table style="width:100%">
         <tr>
