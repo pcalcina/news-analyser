@@ -48,6 +48,6 @@
     	<li><?php echo $this->Html->link(__('< Todas as notícias'), 
     		            array('controller'=>'News', 'action'=>'index')); ?>
 	    </li>
-		<li><?php echo $this->Html->link(__('Criar evento'), array('action' => 'add')); ?></li>
+		<li><?php echo $this->Html->link(__('Identificar eventos'), array('controller' => 'annotation_groups', 'action' => 'possible_groups')); ?></li>
 	</ul>
 </div>
