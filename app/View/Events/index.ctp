@@ -16,9 +16,11 @@
 		</td>
 		<td class="actions">
 			<?php echo $this->Form->postLink(__('Eliminar'), array('action' => 'delete', $event['Event']['event_id']), null, __('Are you sure you want to delete # %s?', $event['Event']['event_id'])); ?>
-		</td>
+                        <?php echo $this->Form->postLink(__('Editar'), array('action' => 'edit',$event['Event']['event_id'] ), null ); ?>
+
+                </td>
 	</tr>
-<?php endforeach; ?>
+        <?php endforeach; ?>
 	</table>
 	<p>
 	<?php
