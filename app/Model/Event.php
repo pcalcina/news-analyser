@@ -7,12 +7,7 @@ class Event extends AppModel {
 	public $displayField = 'name';
     public $actsAs = array('Containable');
     public $hasMany = array('EventAnnotation');
-    private $TagDetail;
-    
-    public function __construct(){
-        $this->TagDetail = ClassRegistry::init('TagDetail');
-    }
-    
+
     public function exportAsTable(){
         $events = array();
         $q = "SELECT event_annotation.event_id, event_annotation_detail.tag_detail_id, 
@@ -21,8 +16,6 @@ class Event extends AppModel {
               LEFT JOIN event_annotation ON 
                   event_annotation.event_annotation_id = event_annotation_detail.event_annotation_id";
         $raw = $this->query($q);
-        
-        $tagsDetailById = $this->TagDetail->getTagsDetailById();
         
         foreach($raw as $detail){
             $eventId = $detail['event_annotation']['event_id'];

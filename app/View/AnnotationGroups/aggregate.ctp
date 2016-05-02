@@ -5,8 +5,6 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
 <?php $this->Html->script('jquery.textHighlighter.js',array('inline'=>false)); ?>
 <?php $this->Html->script('jquery-ui-1.10.4.custom.min.js',array('inline'=>false)); ?>
 <?php $this->Html->script('datepicker-pt-BR.js',array('inline'=>false)); ?>
-
-<?php //$this->Html->script('jquery.tablesorter.js',array('inline'=>false)); ?>
 <?php $this->Html->script('tablesorter2.js',array('inline'=>false)); ?>
 <?php $this->Html->script('tablesorter.widgets.js',array('inline'=>false)); ?>
 
@@ -41,8 +39,9 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     
     var URL_REMOVE_ANNOTATION = '<?php echo Router::url(
                                 array('controller' => 'eventAnnotations', 
-                                      'action'     => 'deleteAjax')); ?>';
-    var saved_event = <?php echo json_encode($saved_event); ?>;
+                                      'action'     => 'deleteAjax')); ?>'; 
+    var saved_event = <?php echo json_encode($saved_event); ?>;                                       
+                                          
     $(document).ready(function () {
         addDatePicker($('.datepicker')); 
         fillEvent(saved_event);
@@ -544,7 +543,8 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     function saveEvent() {
         //$('#message-saving').show();
         var group = [];
-         
+        console.log("groupIds");
+        console.log(groupIds);
         //$('.event-group-container').each(function (i, container) {
         //console.log(URL_SAVE_ANNOTATIONS);
         console.log("-----");

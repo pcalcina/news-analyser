@@ -825,8 +825,9 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
 
                             <td class='actions' style='text-align:center;vertical-alightment:center;width:10px'>
                                 <span>
-                                    <a class='event-group-remove-event' href="javascript:"></a></td>
-                            </span>
+                                    <a class='event-group-remove-event' href="javascript:"></a> 
+                                </span>
+                            </td>
                         </tr>
                     </table>
 

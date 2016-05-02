@@ -82,7 +82,12 @@ class AnnotationGroupsController extends AppController {
         $this->AnnotationGroup->recursive = 0;        
 		$this->set('groups', $this->AnnotationGroup->aggregate_events());
 	}
-    
+        
+    public function possible_groups() {
+        $this->AnnotationGroup->recursive = 0;   
+        //debug($this->AnnotationGroup->grouping_groups());
+        $this->set('groups', $this->AnnotationGroup->grouping_groups());
+    }    
     protected function getTagsDetailById ($tagsDetail) {
         $tagsDetailById = array();
         foreach ($tagsDetail as $tagDetail) {
@@ -121,6 +126,24 @@ class AnnotationGroupsController extends AppController {
         }
         return $event;
     }    
+    
+    public function generate_event() {
+        $this->loadModel('Tag');
+        $this->loadModel('TagDetail'); 
+        $this->loadModel('TextType');
+        $this->loadModel('TagType');
+        $this->loadModel('AnnotationGroup');
+        
+        $groupIds = explode(',', $this->params->named['x']); 
+        $tags = $this->Tag->find('all', array('contain' => array('TagDetail' ),
+                                              'order' => 'tag.name'));
+        $this->set('groupIds', $groupIds);
+        $this->set('groups', $this->getOrderedGroups($groupIds)); 
+        $this->set('tagsDetailById', $this->getTagsDetailById ($this->TagDetail->find('all')));
+       
+        $this->set('tags', $this->getTagsById ($tags)); 
+    }
+    
     public function aggregate() {
         $this->loadModel('Tag');
         $this->loadModel('TagDetail');
@@ -131,17 +154,17 @@ class AnnotationGroupsController extends AppController {
         $groupIds = explode(',', $this->params->named['x']); 
         $tags = $this->Tag->find('all', array('contain' => array('TagDetail' ),
                                               'order' => 'tag.name'));
-     
-        $eventId = $this->getEventId ($groupIds);  
+ 
+        $eventId = $this->getEventId ($groupIds);
+        
         $tagTypes = $this->TagType->find('all');
         $textTypes = $this->TextType->find('all');                                              
         $tagsById = $this->getTagsById ($tags);                         
-        $orderedGroups = $this->orderGroupsByAnnotation($this->getEventGroups($groupIds), $tagsById);        
+        $orderedGroups = $this->orderGroupsByAnnotation($this->getEventGroups($groupIds), $tagsById); 
         $tagsDetail = $this->TagDetail->find('all'); 
         $tagsDetailById = $this->getTagsDetailById ($tagsDetail);
         $tagTypesById = $this->getTagsTypesById ($tagTypes);
-        $textTypesById = $this->getTextTypesById ($textTypes);
-        $tagsDetailById = $this->getTagsDetailById ($tagsDetail);
+        $textTypesById = $this->getTextTypesById ($textTypes);  
         $this->set('tags', $tags);
         $this->set('orderedGroups', $orderedGroups);
         $this->set('tagsById', $tagsById);        
@@ -150,8 +173,8 @@ class AnnotationGroupsController extends AppController {
         $this->set('textTypesById', $textTypesById);
         $this->set('groupIds', $groupIds);
         $this->set('eventId', $eventId);
-        $this->set('saved_event', $this->getEvent($eventId));
-        $buff = array(); 
+        $this->set('saved_event', $this->getEvent($eventId)); 
+        $buff = array();  
     }
     
     protected function getEventId ($groupIds)
@@ -182,11 +205,13 @@ class AnnotationGroupsController extends AppController {
     protected function orderGroupsByAnnotation($groups, &$tagsById){
         $orderedGroups = array();
         $data = '';
-        $city = '';
-        
-        foreach($groups as $group){
+        $city = ''; 
+        foreach($groups as $group){ 
             foreach($group['Annotation'] as $annotation){
+                
+                 
                 $tagName = $tagsById[$annotation['tag_id']]['Tag']['name'];
+                
                 if($tagName === 'Data'){
                     $data = $annotation['AnnotationDetail'][0]['value'];
                 }
@@ -195,10 +220,11 @@ class AnnotationGroupsController extends AppController {
                 }
                 else {
                     $orderedGroups[$annotation['tag_id']][] = $annotation;
-                }               
+                }
+                
             }
         }
-        
+         
         return array('orderedGroups' => $orderedGroups,
                      'date' => $data,
                      'city' => $city);
@@ -212,5 +238,15 @@ class AnnotationGroupsController extends AppController {
         return $this->AnnotationGroup->find('all', 
                  array('conditions' => array('annotation_group_id' => $ids),
                     'contain' => array('Annotation' => array('AnnotationDetail'))));
+    }
+    
+    protected function getOrderedGroups($ids) { 
+        $this->loadModel('AnnotationGroup');
+        $this->loadModel('Annotation');
+        $this->loadModel('AnnotationDetail'); 
+   
+        return $this->AnnotationGroup->find('all', 
+                 array('conditions' => array('annotation_group_id' => $ids),
+                    'contain' => array('Annotation' => array('AnnotationDetail', 'order' => 'Annotation.tag_id ASC'))));
     }
 }
