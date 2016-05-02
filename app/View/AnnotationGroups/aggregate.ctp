@@ -1,13 +1,20 @@
 <?php
-
 $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
 <?php $this->Html->script('select2.min.js',array('inline'=>false)); ?>
 <?php $this->Html->script('jquery.qtip.min.js',array('inline'=>false)); ?>
 <?php $this->Html->script('jquery.textHighlighter.js',array('inline'=>false)); ?>
 <?php $this->Html->script('jquery-ui-1.10.4.custom.min.js',array('inline'=>false)); ?>
 <?php $this->Html->script('datepicker-pt-BR.js',array('inline'=>false)); ?>
+<?php $this->Html->script('tablesorter2.js',array('inline'=>false)); ?>
+<?php $this->Html->script('tablesorter.widgets.js',array('inline'=>false)); ?>
+
+<?php $this->Html->script('moment.js',array('inline'=>false)); ?>
+<?php $this->Html->script('bootstrap-sortable.js',array('inline'=>false)); ?>
+
+
 <?php echo $this->Html->css('jquery-ui-1.10.4.custom.css'); ?>
 <?php echo $this->Html->css('select2.css'); ?>
+<?php echo $this->Html->css('tablesorter.css'); ?>
 <?php echo $this->Html->css('jquery.qtip.min.css'); ?>
 
 <script>
@@ -37,15 +44,8 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                                           
     $(document).ready(function () {
         addDatePicker($('.datepicker')); 
-        //addDatePicker($('.datepicker'));  
         fillEvent(saved_event);
-        
-        //fillEvent(event);
-        //fillEventGroups(savedEventGroups); 
-        //setInterval(function () {
-            //saveEventGroups();
-        //}, 60000); 
-        
+        $(".annotation-group").tablesorter();
     });
     function addDatePicker(element) {
         element.datepicker({
@@ -87,14 +87,10 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
             for (var i in event.EventAnnotation) { 
                  var annotation = event.EventAnnotation[i];
                  addInputPropertyNew(annotation,{ selectedTag: annotation.tag_id, table: $('.event-group-annotations', container)});
-                //console.log(annotation);
             }  
         }
         else
         { 
-            
-            //console.log("Solo poner ciudad  y data");
-            //addInputPropertyNew(annotation,{ selectedTag: annotation.tag_id, table: $('.event-group-annotations', container)});
         
         }     
         
@@ -567,10 +563,6 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
             URL_SAVE_ANNOTATIONS,
             {event: group, groupsIds: groupIds},
             function (remoteGroups) {
-                //console.log("remoteGroups");
-                //console.log(remoteGroups);
-                //$('.event-group-container').empty();
-                //$('#message-saving').hide();  
                 fillEvent(remoteGroups);
             },
             'json'      
@@ -589,13 +581,16 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
           <tr>
             <td>
               <center><h3> <?php echo $tagsById[$tagId]['Tag']['name']; ?> </h3></center>
-              <table>
+              <table class="annotation-group tablesorter">
+              <thead>
               <tr>
-                <td>Annotation Group</td>
+                <th>Annotation Group</th>
                 <?php foreach ($annotations[0]['AnnotationDetail'] as $annotationDetail): ?>
-                  <td> <b><?php echo $tagsDetailById[$annotationDetail['tag_detail_id']]['TagDetail']['title']; ?> </b></td>
+                  <th> <b><?php echo $tagsDetailById[$annotationDetail['tag_detail_id']]['TagDetail']['title']; ?> </b></th>
                 <?php endforeach; ?>
               </tr>
+              </thead>
+              <tbody>
               <?php foreach ($annotations as $annotation): ?>
                 <tr>
                   <td>
@@ -615,6 +610,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                 <?php endforeach; ?>
                 </tr>
               <?php endforeach; ?>
+              </tbody>
               </table>
             </td>
           </tr>

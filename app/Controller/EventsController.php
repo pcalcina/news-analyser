@@ -1,37 +1,14 @@
 <?php
 App::uses('AppController', 'Controller');
-/**
- * Events Controller
- *
- * @property Event $Event
- * @property PaginatorComponent $Paginator
- */
 class EventsController extends AppController {
 
-/**
- * Components
- *
- * @var array
- */
 	public $components = array('Paginator');
 
-/**
- * index method
- *
- * @return void
- */
 	public function index() {
 		$this->Event->recursive = 0;
 		$this->set('events', $this->Paginator->paginate());
 	}
 
-/**
- * view method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
 	public function view($id = null) {
 		if (!$this->Event->exists($id)) {
 			throw new NotFoundException(__('Invalid event'));
@@ -40,11 +17,6 @@ class EventsController extends AppController {
 		$this->set('event', $this->Event->find('first', $options));
 	}
 
-/**
- * add method
- *
- * @return void
- */
 	public function add() {
 		if ($this->request->is('post')) {
 			$this->Event->create();
@@ -56,7 +28,7 @@ class EventsController extends AppController {
 			}
 		}
 	}
-
+ 
 /**
  * edit method
  *
@@ -222,7 +194,7 @@ class EventsController extends AppController {
         $this->set('link', $link);   
     }
     
-    //Gurdar datos event 
+ 
     public function saveAjax(){ 
         $this->layout = "ajax"; 
         $this->loadModel('AnnotationGroup');
@@ -268,6 +240,21 @@ class EventsController extends AppController {
         $events = $this->Event->find('all', $conditions); 
         $this->set('event', $events);  
     }
+    
+    public function export_to_csv() {
+        //$this->response->download("eventos.csv");
+        $this->layout = "ajax"; 
+        $this->loadModel('TagDetail');
+        $tagsDetailById = $this->TagDetail->getTagsDetailById();        
+        $this->set('tagsDetailById', $tagsDetailById);
+        $events = $this->Event->exportAsTable();
+        $this->set('events', $events);
+        $maxElements = array();
+        foreach($events as $eventId => $event){
+            $maxElements[$eventId] = count($event);
+        }
+        $this->set('maxElements', $maxElements);
+    }    
       
 	public function delete($id = null) {
 		$this->Event->id = $id;
@@ -281,8 +268,5 @@ class EventsController extends AppController {
 			$this->Session->setFlash(__('The event could not be deleted. Please, try again.'));
 		}
 		return $this->redirect(array('action' => 'index'));
-	}}
-
-        
-        
-         
+        }
+}        

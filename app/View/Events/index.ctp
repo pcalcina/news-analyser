@@ -40,6 +40,11 @@
 	    <li><?php echo $this->Html->link(__('< Voltar'), 
     		            $this->request->referer()); ?>
         </li>
+
+    	<li><?php echo $this->Html->link(__('Exportar para CSV'), 
+    		            array('controller'=>'Events', 'action'=>'export_to_csv')); ?>
+	    </li>
+
     	<li><?php echo $this->Html->link(__('< Todas as notícias'), 
     		            array('controller'=>'News', 'action'=>'index')); ?>
 	    </li>
