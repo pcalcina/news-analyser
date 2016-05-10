@@ -14,7 +14,8 @@ class Event extends AppModel {
                   event_annotation.event_annotation_id, event_annotation_detail.value 
               FROM event_annotation_detail 
               LEFT JOIN event_annotation ON 
-                  event_annotation.event_annotation_id = event_annotation_detail.event_annotation_id";
+                  event_annotation.event_annotation_id = event_annotation_detail.event_annotation_id
+              ORDER BY event_annotation.event_id,  event_annotation_detail.tag_detail_id ASC";
         $raw = $this->query($q);
         
         foreach($raw as $detail){

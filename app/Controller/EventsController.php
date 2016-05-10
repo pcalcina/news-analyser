@@ -247,18 +247,26 @@ class EventsController extends AppController {
     }
     
     public function export_to_csv() {
-        //$this->response->download("eventos.csv");
+        $this->response->download("eventos.csv");
         $this->layout = "ajax"; 
         $this->loadModel('TagDetail');
-        $tagsDetailById = $this->TagDetail->getTagsDetailById();        
-        $this->set('tagsDetailById', $tagsDetailById);
-        $events = $this->Event->exportAsTable();
+        
+        $tagsDetailById = $this->TagDetail->getTagsDetailById(); 
+        $events = $this->Event->exportAsTable();  
+        
+        $maxElementsTags = array();
+        $ElementsEventTag = array();
+        foreach($events as $eventId => $event){ 
+            $ElementsEventTag[$eventId] = array(); 
+            $ElementsEventTag[$eventId]['TagsElements'] = array();
+            foreach($event as $tagId => $tag){
+                $ElementsEventTag[$eventId]['TagsElements'][$tagId ] = count($tag); 
+            } 
+            $maxElementsTags[$eventId]=max($ElementsEventTag[$eventId]['TagsElements']);
+        } 
         $this->set('events', $events);
-        $maxElements = array();
-        foreach($events as $eventId => $event){
-            $maxElements[$eventId] = count($event);
-        }
-        $this->set('maxElements', $maxElements);
+        $this->set('tagsDetailById', $tagsDetailById); 
+        $this->set('maxElementsTags', $maxElementsTags);
     }    
       
 	public function delete($id = null) {
