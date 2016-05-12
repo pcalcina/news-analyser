@@ -137,11 +137,25 @@ class AnnotationGroupsController extends AppController {
         $groupIds = explode(',', $this->params->named['x']); 
         $tags = $this->Tag->find('all', array('contain' => array('TagDetail' ),
                                               'order' => 'tag.name'));
+        $groups = $this->getOrderedGroups($groupIds);
+        foreach ($groups[0]['Annotation'] as $annotation) {
+             if($annotation['tag_id']==2)
+            {
+                $city = $annotation['AnnotationDetail'][0]['value']; 
+            }
+            if($annotation['tag_id']==4)
+            {
+                $date = $annotation['AnnotationDetail'][0]['value']; 
+            }
+        }
+        
         $this->set('groupIds', $groupIds);
-        $this->set('groups', $this->getOrderedGroups($groupIds)); 
-        $this->set('tagsDetailById', $this->getTagsDetailById ($this->TagDetail->find('all')));
-       
-        $this->set('tags', $this->getTagsById ($tags)); 
+        $this->set('groups', $groups); 
+        $this->set('tagsDetailById', $this->getTagsDetailById ($this->TagDetail->find('all'))); 
+        $this->set('tags', $this->getTagsById ($tags));
+        $this->set('city', $city);
+        $this->set('date', $date);
+        
     }
     
     public function aggregate() {

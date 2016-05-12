@@ -29,6 +29,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     var data = "<?php echo $orderedGroups['date']; ?>";
     var cidade = "<?php echo $orderedGroups['city']; ?>"; 
     var saved_event = <?php echo json_encode($saved_event); ?>;
+    var nameEvent = <?php echo json_encode($nameEvent); ?>;
     
     var TAG_NAMES = {};
     for (var i = 0; i < TAGS.length; i++) {
@@ -552,7 +553,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
        
         event.push({  
                 event_id: eventId,
-                name : cidade + "-" + data, 
+                name : $('.nameEvent').val(),
                 eventAnnotations: getEventAnnotations($('.event-group-container').find('.event-group-annotations'))  
         }); 
          
@@ -575,9 +576,12 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         </li>
 	    <li style='vertical-align:middle !important;'  ><?php echo $this->Html->link(__('List Eventos'), array('controller' => 'events', 'action' => 'index')); ?>
         </li>
+        <li style='vertical-align:middle !important;'  ><?php echo $this->Html->link(__('Identificar eventos'), array('controller' => 'annotation_groups', 'action' => 'possible_groups')); ?>
+            </li> 
     </ul>
 </div>  
-<div class = ' index'><h2><?php echo "Evento {$orderedGroups['city']} - {$orderedGroups['date']}"; ?></h2></div> 
+<div class = ' index'><h2> <?php echo "Evento: "; ?></h2><input type="text" class='nameEvent' name="nameEvent" style="width: 400px; " value='<?php echo $nameEvent?>'> 
+</div> 
 <div class="news">
     <table style="width:100%">
         <tr>

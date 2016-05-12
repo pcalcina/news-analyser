@@ -1,24 +1,36 @@
+<?php $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>  
+<?php $this->Html->script('tablesorter2.js',array('inline'=>false)); ?>  s
+<?php echo $this->Html->css('tablesorter.css'); ?> 
+
+<script>
+$(document).ready(function () {
+         
+        $(".annotation-group").tablesorter();  
+        
+    });
+</script> 
 
 <div class="  index">
     <h2><?php echo "Possíveis Eventos"; ?></h2> 
 </div> 
 <div class="actions">
 	<ul>
-	    <li><?php echo $this->Html->link(__('< Voltar'), 
-    		            $this->request->referer()); ?>
-            </li> 
-	    <li> <?php echo $this->Html->link(__('List Annotations Groups'), array('controller' => 'annotationGroups', 'action' => 'index')); ?></li>
-             
+	    <li><?php echo $this->Html->link(__('< Voltar'), $this->request->referer()); ?> </li>  
+            <li><?php echo $this->Html->link(__('< Todas as notícias'), array('controller'=>'News', 'action'=>'index')); ?> </li> 
+            <li> <?php echo $this->Html->link(__('Lista de Eventos'), array('controller' => 'events', 'action' => 'index')); ?></li>
 	</ul>
 </div>
-<table>
+<table class="annotation-group tablesorter">
+    <thead>
     <tr>
         <th>News</th> 
         <th>Name</th>
         <th>Data</th>
         <th>Cidade</th>
         <th class="actions"> </th>
-    </tr>
+    </tr> 
+    </thead>
+    <tbody>
 <?php foreach ($groups['candidateEvents'] as $key => $candidate): ?>
     <tr> 
         <td>
@@ -36,7 +48,7 @@
     </tr>  
      
 <?php endforeach; ?>    
- 
+    </tbody>
 </table>
 
 <br/>
