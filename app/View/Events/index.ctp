@@ -37,17 +37,14 @@
 </div>
 <div class="actions">
 	<ul>
-	    <li><?php echo $this->Html->link(__('< Voltar'), 
-    		            $this->request->referer()); ?>
-        </li>
-
-    	<li><?php echo $this->Html->link(__('Exportar para CSV'), 
+	    <li><?php echo $this->Html->link(__('< Voltar'), $this->request->referer()); ?>  </li>
+            <li><?php echo $this->Html->link(__('< Todas as notícias'), array('controller'=>'News', 'action'=>'index')); ?> </li> 
+            <li><?php echo $this->Html->link(__('Identificar eventos'), array('controller' => 'annotation_groups', 'action' => 'possible_groups')); ?></li>
+            <br>    
+            <li><?php echo $this->Html->link(__('Exportar para CSV'), 
     		            array('controller'=>'Events', 'action'=>'export_to_csv')); ?>
 	    </li>
 
-    	<li><?php echo $this->Html->link(__('< Todas as notícias'), 
-    		            array('controller'=>'News', 'action'=>'index')); ?>
-	    </li>
-		<li><?php echo $this->Html->link(__('Identificar eventos'), array('controller' => 'annotation_groups', 'action' => 'possible_groups')); ?></li>
-	</ul>
+    	 
+		 	</ul>
 </div>

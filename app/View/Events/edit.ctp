@@ -576,6 +576,8 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         </li>
 	    <li style='vertical-align:middle !important;'  ><?php echo $this->Html->link(__('List Eventos'), array('controller' => 'events', 'action' => 'index')); ?>
         </li>
+        <li style='vertical-align:middle !important;'  ><?php echo $this->Html->link(__('Identificar eventos'), array('controller' => 'annotation_groups', 'action' => 'possible_groups')); ?>
+            </li> 
     </ul>
 </div>  
 <div class = ' index'><h2> <?php echo "Evento: "; ?></h2><input type="text" class='nameEvent' name="nameEvent" style="width: 400px; " value='<?php echo $nameEvent?>'> 

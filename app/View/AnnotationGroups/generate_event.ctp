@@ -72,9 +72,13 @@
 	<ul>
 	    <li><?php echo $this->Html->link(__('< Voltar'), 
     		            $this->request->referer()); ?>
-            </li> 
-	    <li> <a href='javascript:createEvent();'> Criar Evento </a></li>
-             
+            </li>
+            <li><?php echo $this->Html->link(__('< Todas as notícias'),  array('controller'=>'News', 'action'=>'index')); ?> </li>  
+            <li style='vertical-align:middle !important;'  ><?php echo $this->Html->link(__('Identificar Eventos'), array('controller' => 'annotation_groups', 'action' => 'possible_groups')); ?></li>
+            <li style='vertical-align:middle !important;'  ><?php echo $this->Html->link(__('List Eventos'), array('controller' => 'events', 'action' => 'index')); ?></li>
+    
+            <br>
+            <li> <a href='javascript:createEvent();'> Criar Evento </a></li> 
 	</ul>
 </div>
 
