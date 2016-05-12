@@ -57,7 +57,8 @@ class EventsController extends AppController {
         $tagTypesById = $this->getTagsTypesById ($tagTypes);
         $tagsById = $this->getTagsById ($tags);                    
         $orderedGroups = $this->orderGroupsByAnnotation($groupIds, $tagsById);
-         
+        $saved_event = $this->getEvent($eventId); 
+        
         $this->set('eventId', $eventId);
         $this->set('groupIds', $groupIds); 
         $this->set('tags', $tags);
@@ -66,7 +67,8 @@ class EventsController extends AppController {
         $this->set('tagTypesById', $tagTypesById);
         $this->set('orderedGroups', $orderedGroups);
         $this->set('tagsById', $tagsById);        
-        $this->set('saved_event', $this->getEvent($eventId));     
+        $this->set('saved_event', $saved_event);
+        $this->set('nameEvent', $saved_event[0]['Event']['name']);
         
     }
     
@@ -211,7 +213,9 @@ class EventsController extends AppController {
         if(!empty($this->request->data['event'])){
             foreach($this->request->data['event'] as $group){
                 //if(empty($group['event_id'])){ }
-                $eventId = $group['event_id'];  
+                $eventId = $group['event_id']; 
+                $EventInfo =  array('Event' =>  array('event_id' =>$eventId,'name' => $group['name']));
+                $this->Event->save($EventInfo);
                 
                 if(!empty($group['eventAnnotations'])){
                     foreach($group['eventAnnotations'] as $eventannotation){
@@ -247,6 +251,7 @@ class EventsController extends AppController {
     }
     
     public function export_to_csv() {
+        //$this->header(“Content-Type: application/vnd.ms-excel; charset=UTF-8″); 
         $this->response->download("eventos.csv");
         $this->layout = "ajax"; 
         $this->loadModel('TagDetail');

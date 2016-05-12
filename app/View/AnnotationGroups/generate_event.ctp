@@ -19,11 +19,12 @@
     var URL_CREATE_EVENT = '<?php echo Router::url(
                                 array('controller' => 'events', 
                                       'action'     => 'createEventAjax')); ?>';
-                                          
+    var city = <?php echo $city; ?>;;
+    var date = <?php echo $date; ?>;;
     $(document).ready(function () { 
         //fillGroups(groups); 
     });
-    
+ 
     function createEvent() { 
         
         var groupIds = [];
@@ -31,25 +32,9 @@
             if($(container).find('.incluir').is(':checked') == true)
             {
                 groupIds.push ($(container).find('.event-group-id').val()); 
-            }
-             
-        });  
-        
-         
-        var annotations = groups[0]['Annotation'];
-         
-        for (var i = 0; i < annotations.length; i++) {
-             
-            if(annotations[i]['tag_id']==2)
-            {
-                var city = annotations[i]['AnnotationDetail'][0]['value']; 
-            }
-            if(annotations[i]['tag_id']==4)
-            {
-                var date = annotations[i]['AnnotationDetail'][0]['value']; 
-            }
-        }
-        var name = city + " - " + date;  
+            } 
+        }); 
+        var name =  $('.nameEvent').val();
         if(groupIds.length > 0)
         {
             $.post(
@@ -70,12 +55,18 @@
         
     } 
     
-</script>
- 
- 
+</script> 
+
+<!--?php foreach ( $group['Annotation'] as $indexAnotations => $anotations): ?>
+    < ?php echo $anotations[$indexAnotations]; ?>
+    <!--?php if($annotations[$indexAnotations]['tag_id']==2): ?> 
+         <!--?php $city= $annotations[$indexAnotations]['AnnotationDetail'][0]['value']; ?>   
+    <!--- ?php endif; ? - -> 
+< ?php endforeach; ?-->  
 
 <div class="  index">
     <h2><?php echo "Gerar Eventos"; ?></h2> 
+    <h4><?php echo "Nome do Evento: "; ?></h4>  <input type="text" class='nameEvent' name="nameEvent" style="width: 400px; " value='<?php echo $city . "_" .$date?>'> 
 </div> 
 <div class="actions">
 	<ul>
