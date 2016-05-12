@@ -19,8 +19,8 @@
     var URL_CREATE_EVENT = '<?php echo Router::url(
                                 array('controller' => 'events', 
                                       'action'     => 'createEventAjax')); ?>';
-    var city = <?php echo $city; ?>;;
-    var date = <?php echo $date; ?>;;
+    var city = <?php echo json_encode($city) ?>;
+    var date = <?php echo json_encode($date) ?>;
     $(document).ready(function () { 
         //fillGroups(groups); 
     });
