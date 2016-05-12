@@ -101,3 +101,4 @@ class EventAnnotationDetailsController extends AppController {
 		}
 		return $this->redirect(array('action' => 'index'));
 	}}
+         

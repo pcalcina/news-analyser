@@ -70,9 +70,8 @@ class DATABASE_CONFIG {
 		'database' => '/var/www/news-analyser/app/webroot/protestos.sqlite',
 		'prefix' => '',
 		'encoding' => 'utf8',
-	);
+	); 
         
-
 /*	public $test = array(
 		'datasource' => 'Database/Mysql',
 		'persistent' => false,

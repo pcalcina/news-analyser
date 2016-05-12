@@ -91,16 +91,14 @@ class EventAnnotationsController extends AppController {
  * 
  */
           public function deleteAjax(){
-		//$this->layout = "ajax";
-                debug("llega");
+		$this->layout = "ajax"; 
 		$EventAnnotationId = $this->request->data['id'];
 		$this->EventAnnotation->id = $this->request->data['id'];
                 $this->request->onlyAllow('post', 'delete');
                 
-		if ($this->EventAnnotation->exists()) { 
-                     
+		if ($this->EventAnnotation->exists()) {  
                     $this->loadModel('EventAnnotationDetail');
-                    $this->EventAnnotationDetail->deleteAll(array('EventAnnotationDetail.event_annotation_id' => $EventAnnotationId)); 
+                    $this->EventAnnotationDetail->deleteAll(array('EventAnnotationDetail.event_annotation_id' => $EventAnnotationId));  
 		    $this->EventAnnotation->delete(); 
                 } 
 	} 
@@ -110,7 +108,7 @@ class EventAnnotationsController extends AppController {
 		if (!$this->EventAnnotation->exists()) {
 			throw new NotFoundException(__('Invalid event annotation'));
 		}
-		$this->request->onlyAllow('post', 'delete');
+		$this->request->onlyAllow('post', 'delete');  
 		if ($this->EventAnnotation->delete()) {
 			$this->Session->setFlash(__('The event annotation has been deleted.'));
 		} else {
