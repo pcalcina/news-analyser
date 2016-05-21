@@ -274,27 +274,34 @@ class EventsController extends AppController {
         $this->set('maxElementsTags', $maxElementsTags);
     }    
       
-	public function delete($id = null) {
+	public function delete($id = nul) {
             $this->loadModel('AnnotationGroup');  
+            $this->loadModel('EventAnnotation');
+            $this->loadModel('EventAnnotationDetail');
             $this->Event->id = $id;
             if (!$this->Event->exists()) {
                 throw new NotFoundException(__('Invalid event'));
             }
-            $this->request->onlyAllow('post', 'delete');
-            $this->loadModel('EventAnnotation');
-            $this->EventAnnotation->deleteAll(array('EventAnnotation.event_id' => $id)); 
-            
-            if ($this->Event->delete()) {
-			$this->Session->setFlash(__('The event has been deleted.'));
+            $this->request->onlyAllow('post', 'delete'); 
+            $eventAnnotations=$this->EventAnnotation->find('all',array('EventAnnotation.event_id' => $id)); 
+              
+           if ($this->Event->delete()) {
+                $groups = $this->AnnotationGroup->find('all', array('conditions' => array('AnnotationGroup.event_id' => $id))); 
+                foreach($groups as $group){ 
+                    $annotationGroupInfo = array('AnnotationGroup' => array('annotation_group_id' => $group['AnnotationGroup']['annotation_group_id'], 'event_id' => NULL ));
+                    $this->AnnotationGroup->save($annotationGroupInfo);
+                }
+                foreach($eventAnnotations as $eventAnnotation){
+                    $this->EventAnnotation->delete($eventAnnotation['EventAnnotation']['event_annotation_id']);
+                    foreach ($eventAnnotation['EventAnnotationDetail'] as $eventAnnotationDetail)
+                    {
+                        $this->EventAnnotationDetail->delete($eventAnnotationDetail['event_annotation_detail_id']); 
+                    }  
+                } 
+                $this->Session->setFlash(__('The event has been deleted.'));
             } else {
-			$this->Session->setFlash(__('The event could not be deleted. Please, try again.'));
-            }
-            $groups = $this->AnnotationGroup->find('all', array('conditions' => array('AnnotationGroup.event_id' => $id))); 
-            foreach($groups as $group){ 
-                $annotationGroupInfo = array('AnnotationGroup' => array('annotation_group_id' => $group['AnnotationGroup']['annotation_group_id'], 'event_id' => NULL ));
-                $this->AnnotationGroup->save($annotationGroupInfo);
+                $this->Session->setFlash(__('The event could not be deleted. Please, try again.'));
             } 
-             
-            return $this->redirect(array('action' => 'index'));
+           return $this->redirect(array('action' => 'index'));
         }
 }        
