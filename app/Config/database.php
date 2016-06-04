@@ -70,9 +70,8 @@ class DATABASE_CONFIG {
 		'database' => '/home/www/cebrap.org.br/tools/experimental/news-analyser/app/webroot/protestos.sqlite',
 		'prefix' => '',
 		'encoding' => 'utf8',
-	);
+	); 
         
-
 /*	public $test = array(
 		'datasource' => 'Database/Mysql',
 		'persistent' => false,
