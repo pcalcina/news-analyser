@@ -603,6 +603,31 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     }
     
      
+    function changeStatus(status) {
+         $.ajax({
+             type: "POST",
+             url: URL_CHANGE_STATUS,
+             data: {news_status_id: status,
+                 news_id: NEWS_ID},
+             success: function (response) {
+                 if (response.success) {
+                     $('#current_status_description')
+                             .html(response.news_status.description);
+ 
+                     if (response.news_status.next_status_id) {
+                         $('#next_statuses').val(response.news_status.next_status_id);
+                     }
+                     else {
+                         $('#next_statuses').val('');
+                     }
+                 }
+                 else {
+                     alert('Error cambiando status, tente mais tarde');
+                 }
+             },
+             dataType: 'json'
+         });
+-    }
     
     function getValueAnnotationsDetails(type, input)
     {
