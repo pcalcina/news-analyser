@@ -627,7 +627,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
              },
              dataType: 'json'
          });
--    }
+    }
     
     function getValueAnnotationsDetails(type, input)
     {
