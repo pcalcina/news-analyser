@@ -1,16 +1,14 @@
 <?php $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>  
-<?php $this->Html->script('tablesorter2.js',array('inline'=>false)); ?>  s
+<?php $this->Html->script('tablesorter2.js',array('inline'=>false)); ?>
 <?php echo $this->Html->css('tablesorter.css'); ?> 
 
 <script>
 $(document).ready(function () {
-         
-        $(".annotation-group").tablesorter();  
-        
-    });
+    $(".annotation-group").tablesorter();  
+});
 </script> 
 
-<div class="  index">
+<div class="  index">                
     <h2><?php echo "Possíveis Eventos"; ?></h2> 
 </div> 
 <div class="actions">

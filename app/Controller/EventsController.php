@@ -272,7 +272,30 @@ class EventsController extends AppController {
         $this->set('events', $events);
         $this->set('tagsDetailById', $tagsDetailById); 
         $this->set('maxElementsTags', $maxElementsTags);
-    }    
+    }   
+    
+    public function export_to_csv_one_line_per_event(){
+        $this->response->download("eventos-uma-linha.csv");
+        $this->layout = "ajax";
+        $this->loadModel('TagDetail');
+        $tagsDetailById = $this->TagDetail->getTagsDetailById(); 
+        $events = $this->Event->exportAsTable();  
+        
+        $maxElementsTags = array();
+        $ElementsEventTag = array();
+        foreach($events as $eventId => $event){ 
+            $ElementsEventTag[$eventId] = array(); 
+            $ElementsEventTag[$eventId]['TagsElements'] = array();
+            foreach($event as $tagId => $tag){
+                $ElementsEventTag[$eventId]['TagsElements'][$tagId ] = count($tag); 
+            } 
+            $maxElementsTags[$eventId]=max($ElementsEventTag[$eventId]['TagsElements']);
+        } 
+        //debug($events);
+        $this->set('events', $events);
+        $this->set('tagsDetailById', $tagsDetailById); 
+        $this->set('maxElementsTags', $maxElementsTags);
+    } 
       
 	public function delete($id = nul) {
             $this->Session->setFlash(__('A eliminação de eventos está suspensa por enquanto. Será implementada numa versão futura. Desculpe os trastornos'));

@@ -45,6 +45,10 @@
     		            array('controller'=>'Events', 'action'=>'export_to_csv')); ?>
 	    </li>
 
+            <li><?php echo $this->Html->link(__('Exportar para CSV (1 linha)'), 
+    		            array('controller'=>'Events', 'action'=>'export_to_csv_one_line_per_event')); ?>
+            </li>
+
     	 
 		 	</ul>
 </div>
