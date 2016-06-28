@@ -104,14 +104,12 @@ class EventAnnotationsController extends AppController {
 	}  
         
 	 public function delete($id = null) {
-                $this->loadModel('EventAnnotationDetail');
 		$this->EventAnnotation->id = $id;
 		if (!$this->EventAnnotation->exists()) {
                     throw new NotFoundException(__('Invalid event annotation'));
 		}
 		$this->request->onlyAllow('post', 'delete');  
 		if ($this->EventAnnotation->delete()) {
-                    $this->EventAnnotationDetail->deleteAll(array('EventAnnotationDetail.event_annotation_id' => $id));
                     $this->Session->setFlash(__('The event annotation has been deleted.'));
 		} else {
                     $this->Session->setFlash(__('The event annotation could not be deleted. Please, try again.'));

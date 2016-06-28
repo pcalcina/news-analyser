@@ -80,25 +80,16 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                         //,selectedTagName: tag.Tag.name
             }); 
         }); 
-        console.log(eventId);
-        console.log(events);
         if(events.length > 0)
         {
-            console.log("Recuperar");
-             
             var event = events[0];
-            for (var i in event.EventAnnotation) { 
+            for (var i in event.EventAnnotation) {
                  var annotation = event.EventAnnotation[i];
                  addInputPropertyNew(annotation,{ selectedTag: annotation.tag_id, table: $('.event-group-annotations', container)});
-                //console.log(annotation);
             }  
         }
         else
         { 
-            
-            //console.log("Solo poner ciudad  y data");
-            //addInputPropertyNew(annotation,{ selectedTag: annotation.tag_id, table: $('.event-group-annotations', container)});
-        
         }     
         
     }
@@ -196,10 +187,9 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                 if(annotation){
                     newRow.data('EventannotationId', annotation.event_annotation_id);
                 }
-                /*else
+                else
                 {
-                    newRow.data('annotationId', "newAnnotation");
-                }*/
+                }
                  
         } 
         else {
@@ -217,12 +207,10 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                     row.find('.value').replaceWith(createTdValue(options));
                     row.find('.change').replaceWith(createTdChange(options));
                     row.data('validValue', false);
-                    console.log("remove1");  
                     removeAnnotation(row);
                 }
                 else {//Borrando un clon
                     var oldRow = row.data('clones').pop();
-                    console.log("remove2"); 
                     removeAnnotation(oldRow);
                     oldRow.remove();
                 }
@@ -232,16 +220,13 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
  
             addTagRowToTableNew(options,tdValue,btnRemove,row,options.table); 
  
-            //if (options.annotationId) {
             if(annotation){
-                    //row.data('annotationId', options.annotationId);
                     row.data('EventannotationId', annotation.event_annotation_id);
                     options.EventannotationId = null;
             }
-            /*else
+            else
             {
-                row.data('annotationId', "newAnnotation");
-            }*/
+            }
             
         }
  
@@ -292,16 +277,15 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     }
     
     function removeAnnotation(row) {
-         
+        //$('#message-saving').show();                  
         var EventannotationId = row.data('EventannotationId');
-        console.log(EventannotationId);     
         if (EventannotationId) {
-           // console.log(EventannotationId);     
             $.ajax({
                 type: "POST",
                 url: URL_REMOVE_ANNOTATION,
                 data: {id: EventannotationId},
                 success: function (eventsAnnotations) {
+                    //window.location.reload(false); 
                 }
             });
         }
@@ -443,7 +427,6 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     function createInputRadioBox(title, value, nameRadio, annotationDetailId ){
  
         var radioName = nameRadio; 
-        //console.log(nameRadio);
         var radioBox = $('<input>')
                 .prop('type', 'radio') 
                 .prop('name', radioName) 
@@ -548,7 +531,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     }
     
     function saveEvent() {
-        //$('#message-saving').show();
+        $('#message-saving').show();
         var event = [];
        
         event.push({  
@@ -556,13 +539,15 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                 name : $('.nameEvent').val(),
                 eventAnnotations: getEventAnnotations($('.event-group-container').find('.event-group-annotations'))  
         }); 
-         
+        
         $.post(
             URL_SAVE_EVENT,
             {event: event},
             function (remoteGroups) { 
                 //$('#message-saving').hide();  
+                window.location.reload(false); 
                 fillEvent(remoteGroups);
+                
             },
             'json'      
         );   
