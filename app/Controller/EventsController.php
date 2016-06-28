@@ -212,7 +212,6 @@ class EventsController extends AppController {
         
         if(!empty($this->request->data['event'])){
             foreach($this->request->data['event'] as $group){
-                //if(empty($group['event_id'])){ }
                 $eventId = $group['event_id']; 
                 $EventInfo =  array('Event' =>  array('event_id' =>$eventId,'name' => $group['name']));
                 $this->Event->save($EventInfo);
