@@ -198,7 +198,14 @@ class NewsController extends AppController {
         }
     }
 
+    public function crawler() {
 
+	}
+    
+    public function news_candidatas(){
+        
+    }
+    
     protected function getTagsById ($tags) {
         $tagsById = array();
         foreach ($tags as $tag) {

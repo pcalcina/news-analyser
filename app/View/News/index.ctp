@@ -7,7 +7,7 @@
 <?php //echo $this->Html->css('select2-latest.min.css'); ?>
 <?php echo $this->Html->css('chosen.css'); ?>
 <style>
-.status-confirmed {text-align:center; background-color:green; color:white};
+.status-confirmed {text-align:centeIDr; background-color:green; color:white};
 </style>
 
 <script>
@@ -58,6 +58,8 @@ function confirmNews(newsId){
 <table>
 <tr >
 <td style='vertical-align:middle !important;'><h2><?php echo __('Notícias'); ?></h2></td>
+<td style='vertical-align:middle !important;' 
+    class='actions'><?php echo $this->Html->link(__(' Crawler '), array('controller' => 'news', 'action' => 'crawler')); ?></td>
 <td style='vertical-align:middle !important;' 
     class='actions'><?php echo $this->Html->link(__('Identificar eventos'), array('controller' => 'annotation_groups', 'action' => 'possible_groups')); ?></td>
 <td style='vertical-align:middle !important;' 

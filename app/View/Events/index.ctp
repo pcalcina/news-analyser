@@ -1,5 +1,26 @@
+<script>
+$(document).ready(function() {
+    URL_EVENT = "<?php echo $this->Html->url(array('controller' => 'events', 'action' => 'edit')); ?>";
+ 
+    $("#btnGoToEvents").click(function(){
+        console;log(URL_EVENT);
+        window.location = URL_EVENT + '/' + $("#txtIdEvents").val();
+         
+    });
+});
+</script>
 <div class="events index">
 	<h2><?php echo __('Eventos'); ?></h2>
+        <table> 
+            <tr>
+                <td style='vertical-align:middle !important; '>
+                    <input id="txtIdEvents" placeholder="   ID do evento"></td>
+                <td style='vertical-align:middle !important;'>
+                    <input value="Ir para evento>" id='btnGoToEvents' type='button'></td> 
+            </tr>
+        </table>
+      
+            
 	<table cellpadding="0" cellspacing="0">
 	<tr>
 			<th><?php echo $this->Paginator->sort('name', 'Nome'); ?></th>
