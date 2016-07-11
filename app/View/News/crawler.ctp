@@ -101,7 +101,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                     </tr>
                     <tr>
                         <td style="font-size: 10pt;" class="label"><b>Data Fin</b>&nbsp;</td>
-                        <td style="padding: 0px; vertical-align: middle;" class="value"><table style="font-size: 8pt;"><tbody><tr><td colspan="2"><input id='date2'></td></tr></tbody></table></td>
+                        <td style="padding: 0px; vertical-align: middle;" class="value"><table style="font-size: 8pt;"><tbody><tr><td colspan="2"><input class='datapicker' id='date2'></td></tr></tbody></table></td>
                     </tr>
                     <tr>
                         <td style="font-size: 10pt;" class="label"><b>Origen</b>&nbsp;</td>

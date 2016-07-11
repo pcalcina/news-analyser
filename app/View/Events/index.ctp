@@ -1,9 +1,17 @@
+<?php $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
+<?php $this->Html->script('jquery-ui-1.10.4.custom.min.js',array('inline'=>false)); ?>
+<?php $this->Html->script('datepicker-pt-BR.js',array('inline'=>false)); ?>
+<?php //$this->Html->script('select2-latest.min.js',array('inline'=>false)); ?>
+<?php $this->Html->script('chosen.jquery.min.js', array('inline'=>false)); ?>
+<?php echo $this->Html->css('jquery-ui-1.10.4.custom.css'); ?>
+<?php //echo $this->Html->css('select2-latest.min.css'); ?>
+<?php echo $this->Html->css('chosen.css'); ?>
 <script>
 $(document).ready(function() {
     URL_EVENT = "<?php echo $this->Html->url(array('controller' => 'events', 'action' => 'edit')); ?>";
- 
+    console.log(URL_EVENT);
     $("#btnGoToEvents").click(function(){
-        console;log(URL_EVENT);
+        console.log(URL_EVENT);
         window.location = URL_EVENT + '/' + $("#txtIdEvents").val();
          
     });
