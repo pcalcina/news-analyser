@@ -24,7 +24,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
           
     $(document).ready(function () {
         addDatePicker($('.datepicker')); 
-        addDate();
+        //addDate();
         //$(".annotation-group").tablesorter();  
         
     });
@@ -37,9 +37,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
             autoclose: true,
             changeMonth: true,
             changeYear: true,
-            minDate: '2012-01-01',
-            maxDate: '2014-12-01',
-            defaultDate: <?php echo date("Y-m-d")?>,
+            defaultDate: '<?php echo date("Y-m-d")?>',
             todayHighlight: true,
             regional: $.datepicker.regional['pt_BR']
         });
@@ -57,18 +55,6 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
     function addBold(element) {
         var currentLabel = element.html();
         element.html('<b>' + currentLabel + '</b>');
-    }
-    
-    function addDate(){
-         
-        var inputTextBox = $('<input>').val(); 
-        //$('#data1').append(inputTextBox);
-        console.log($('#data1'));
-        
-        //inputTextBox.addClass('datepicker');
-        //addDatePicker(inputTextBox); 
-        //inputTextBox.datepicker({defaultDate: < ?php echo date("Y-m-d")?>});
-        //return inputTextBox;  
     }
     
     function crawlear(){
@@ -97,11 +83,15 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
                     <tbody>
                     <tr>
                         <td style="font-size: 10pt;" class="label"><b>Data Inicio</b></td>
-                        <td style="padding: 0px; vertical-align: middle;" class="value"><table style="font-size: 8pt;"><tbody><tr><td colspan="2"><div id="date1"></div></td></tr></tbody></table></td>
+                        <td style="padding: 0px; vertical-align: middle;" class="value">
+                            <input class='datepicker' id='date1'>
+                        </td>
                     </tr>
                     <tr>
                         <td style="font-size: 10pt;" class="label"><b>Data Fin</b>&nbsp;</td>
-                        <td style="padding: 0px; vertical-align: middle;" class="value"><table style="font-size: 8pt;"><tbody><tr><td colspan="2"><input class='datapicker' id='date2'></td></tr></tbody></table></td>
+                        <td style="padding: 0px; vertical-align: middle;" class="value"><table style="font-size: 8pt;">
+                            <input class='datepicker' id='date2'>
+                        </td>
                     </tr>
                     <tr>
                         <td style="font-size: 10pt;" class="label"><b>Origen</b>&nbsp;</td>
