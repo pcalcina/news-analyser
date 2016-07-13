@@ -45,11 +45,23 @@ function initCrawling(){
     var endDate = $("#data-final").val();
     var keywords = $("#keywords").select2('val');
     var debugString = "Iniciando crawling " + startDate + ", " + endDate + ", " + keywords;
-    crawlingButton.prop("disabled", true);
+
     
-    console.log(debugString);
-    alert(debugString);
-    crawlingButton.prop("disabled", false);
+    if(startDate && endDate && keywords){
+        crawlingButton.prop("disabled", true);
+        console.log(debugString);
+        alert(debugString);
+        crawlingButton.prop("disabled", false);
+    }
+    else if(!startDate){
+        alert("Preencher data inicial");
+    }
+    else if(!endDate){
+        alert("Preencher data final");
+    }
+    else if(!keywords){
+        alert("Preencher palavras chave");
+    }
 }
 
 </script>
@@ -71,35 +83,38 @@ function initCrawling(){
 </div>  
 <div class = 'index'>
 <h2> <?php echo "Crawler"; ?></h2>
-    <table style="width:100%">
-        <tr>
-            <td style="padding: 10px; vertical-align: middle;" class="value">
-                <input class='datepicker' id='data-inicial' placeholder="Data inicial">
-            </td>
-            <td style="padding: 10px; vertical-align: middle;" class="value">
-                <input class='datepicker' id='data-final' placeholder="Data final">
-            </td>
-        </tr>
-        <tr>
-            <td style="padding: 10px; vertical-align: middle;" colspan="2">
-                <select id="keywords" multiple="" style="width:100%"></select>
-            </td>
-        </tr>
-        <tr>
-            <td style="padding: 10px; vertical-align: middle;">
-                <label>Origem</label>
-            </td>
-            <td style="padding: 10px; vertical-align: middle;">
-                <input type="checkbox" disabled="true" checked="true">
-                Folha de São Paulo
-            </td>
-        </tr>        
-         <tr>
-            <td style="padding: 10px; vertical-align: middle;" colspan="2">
-                <input id="init-crawling-button" type="button" value="Iniciar crawling" 
-                       class="submit" onclick="javascript:initCrawling();"></input>
-            </td>
-        </tr>
-    </table>
+
+<form>
+<table style="width:100%">
+    <tr>
+        <td style="padding: 10px; vertical-align: middle;" class="value">
+            <input class='datepicker' id='data-inicial' placeholder="Data inicial">
+        </td>
+        <td style="padding: 10px; vertical-align: middle;" class="value">
+            <input class='datepicker' id='data-final' placeholder="Data final">
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 10px; vertical-align: middle;" colspan="2">
+            <select id="keywords" multiple="" style="width:100%"></select>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 10px; vertical-align: middle;">
+            <label>Origem</label>
+        </td>
+        <td style="padding: 10px; vertical-align: middle;">
+            <input type="checkbox" disabled="true" checked="true">
+            Folha de São Paulo
+        </td>
+    </tr>        
+     <tr>
+        <td style="padding: 10px; vertical-align: middle;" colspan="2">
+            <input id="init-crawling-button" type="button" value="Iniciar crawling" 
+                   class="submit" onclick="javascript:initCrawling();"></input>
+        </td>
+    </tr>
+</table>
+</form>
  </div>
 <div id="message-loading" style='display:none'>Loading ...</div>
