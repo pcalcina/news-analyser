@@ -1,6 +1,6 @@
 <?php
 $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
-<?php $this->Html->script('select2.min.js',array('inline'=>false)); ?>
+<?php $this->Html->script('select2.full.min.js',array('inline'=>false)); ?>
 <?php $this->Html->script('jquery.qtip.min.js',array('inline'=>false)); ?>
 <?php $this->Html->script('jquery.textHighlighter.js',array('inline'=>false)); ?>
 <?php $this->Html->script('jquery-ui-1.10.4.custom.min.js',array('inline'=>false)); ?>
@@ -18,17 +18,18 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
 <?php echo $this->Html->css('jquery.qtip.min.css'); ?>
 
 <script>
-    //var eventId = < ?php echo json_encode($eventId); ?>;               
-    //var URL_REMOVE_ANNOTATION = '< ?php echo Router::url(array('controller' => 'eventAnnotations', 'action'     => 'deleteAjax')); ?>'; 
-          
-          
     $(document).ready(function () {
         addDatePicker($('.datepicker')); 
-        //addDate();
-        //$(".annotation-group").tablesorter();  
-        
+    
+    $("#keywords").select2({
+	  tags: true,
+	  placeholder: "Digite as palavras chave",
+	  tokenSeparators: [',', ' ']
     });
-     function addDatePicker(element) {
+
+
+    });
+    function addDatePicker(element) {
         element.datepicker({
             format: "dd-mm-yyyy",
             todayBtn: "linked",
@@ -43,86 +44,52 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         });
     }
     
-    function addNumberOnlyRestriction(input){
-        input.on('keyup', function(){           
-            var v = this.value;
-            if($.isNumeric(v) === false){
-                this.value = this.value.slice(0,-1);
-            }
-        });
-    }
-    
-    function addBold(element) {
-        var currentLabel = element.html();
-        element.html('<b>' + currentLabel + '</b>');
-    }
-    
-    function crawlear(){
-      var data1 = $('#data1');
-      var data2 = $('#data2');
-      
-    }
-
 </script> 
 <div class="actions">
     <ul>
         <li><?php echo $this->Html->link(__('< Voltar'), 
     		            $this->request->referer()); ?>
         </li>
-	    <li style='vertical-align:middle !important;'  ><?php echo $this->Html->link(__('< Todas as notícias'), array('controller' => 'news', 'action' => 'index')); ?>
+	    <li style='vertical-align:middle !important;'>
+	        <?php echo $this->Html->link(__('< Todas as notícias'), 
+	              array('controller' => 'news', 'action' => 'index')); ?>
         </li>
-        <li style='vertical-align:middle !important;'  ><?php echo $this->Html->link(__('Noticias Candidatas'), array('controller' => 'news', 'action' => 'news_candidatas')); ?>
-            </li> 
+        <li style='vertical-align:middle !important;'>
+            <?php echo $this->Html->link(__('Noticias Candidatas'), 
+                  array('controller' => 'news', 'action' => 'news_candidatas')); ?>
+        </li> 
     </ul>
 </div>  
-<div class = ' index'><h2> <?php echo "Crawler"; ?></h2>
-    <table style="width:100%">
+<div class = 'index'>
+<h2> <?php echo "Crawler"; ?></h2>
+    <table style="xxwidth:100%">
         <tr>
-            <td style="width:45%">
-                <table>
-                    <tbody>
-                    <tr>
-                        <td style="font-size: 10pt;" class="label"><b>Data Inicio</b></td>
-                        <td style="padding: 0px; vertical-align: middle;" class="value">
-                            <input class='datepicker' id='date1'>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="font-size: 10pt;" class="label"><b>Data Fin</b>&nbsp;</td>
-                        <td style="padding: 0px; vertical-align: middle;" class="value"><table style="font-size: 8pt;">
-                            <input class='datepicker' id='date2'>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="font-size: 10pt;" class="label"><b>Origen</b>&nbsp;</td>
-                        <td style="padding: 0px; vertical-align: middle;" class="value">
-                            <table style="font-size: 8pt;">
-                                <tbody>
-                                    <tr>
-                                        <td><input type="checkbox"></td><td>Folha Sao PAaulo</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+            <td style="padding: 10px; vertical-align: middle;" class="value">
+                <input class='datepicker' id='data-inicial' placeholder="Data inicial">
             </td>
-            
-            <td style="width:45%">
-                <table>
-                    <tbody>
-                        <tr>
-                            <td style="font-size: 10pt;" class="label"><b>Palavras Chave</b>&nbsp;</td> 
-                            <td style="padding: 0px; vertical-align: middle;" class="value"><input></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <span class='actions' style='text-align:right; padding-bottom:5px'> 
-                &nbsp;
-                <a href='javascript:crawlear();'> Buscar </a> 
-                </span>
-            </td>    
+            <td style="padding: 10px; vertical-align: middle;" class="value">
+                <input class='datepicker' id='data-final' placeholder="Data inicial">
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; vertical-align: middle;" colspan="2">
+                <select id="keywords" multiple="" style="width:100%"></select>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; vertical-align: middle;">
+                <label>Origem</label>
+            </td>
+            <td style="padding: 10px; vertical-align: middle;">
+                <input type="checkbox" disabled="true" checked="true">
+                Folha de São Paulo
+            </td>
+        </tr>        
+         <tr>
+            <td style="padding: 10px; vertical-align: middle;" colspan="2">
+                <input type="button" value="Iniciar crawling" 
+                       class="submit"></input>
+            </td>
         </tr>
     </table>
  </div>
