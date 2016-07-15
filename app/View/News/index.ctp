@@ -87,7 +87,7 @@ function confirmNews(newsId){
 </table>
 </div>
 
-    <div id='filtro' style='display:<?php echo ($show_filter)? 'block': 'none'; ?>'>
+<div id='filtro' style='display:<?php echo ($show_filter)? 'block': 'none'; ?>'>
     
     <?php echo $this->Form->create(false, 
         array('type' => 'get', 
@@ -143,9 +143,7 @@ function confirmNews(newsId){
     </table>
     </span>
     </fieldset>
-    </div>
-
-
+</div>
 
 <span>
 <p>
@@ -155,12 +153,7 @@ function confirmNews(newsId){
 </p>
 </span>
 
-
-
-
-
-	
-	<table cellpadding="0" cellspacing="0" style='font-size:10pt'>
+<table cellpadding="0" cellspacing="0" style='font-size:10pt'>
 	<tr>
 	    <th><?php echo $this->Paginator->sort('news_id', 'ID'); ?></th>
 	    <th><?php echo $this->Paginator->sort('NewsStatus.description', 'Status'); ?></th>
