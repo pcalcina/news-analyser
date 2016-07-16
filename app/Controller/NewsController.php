@@ -7,6 +7,7 @@ define("STATUS_SEM_CODIFICAR", "2");
 define("STATUS_CODIFICADA", "3");
 define("STATUS_COM_EVENTO", "4");
 define("STATUS_ELIMINADA", "5");
+define("STATUS_SEM_FILTRAR", "6");
 
 function to_utf8($string) {
 // From http://w3.org/International/questions/qa-forms-utf-8.html
@@ -40,13 +41,13 @@ class NewsController extends AppController {
     private function load_statuses($labelForNull) {
         $this->loadModel('NewsStatus');
         $raw_statuses = $this->NewsStatus->find('all', 
-            array('conditions' => array('NewsStatus.id !=' => STATUS_ELIMINADA)));
+            array('conditions' => array('NewsStatus.id !=' => STATUS_ELIMINADA, 'id !=' => STATUS_SEM_FILTRAR)));
         $statuses = array(null => $labelForNull);
 
         foreach ($raw_statuses as $status) {
             $statuses[$status['NewsStatus']['id']] = $status['NewsStatus']['description'];
         }
-
+        
         return $statuses;
     }
 
@@ -58,7 +59,7 @@ class NewsController extends AppController {
         foreach ($raw_sources as $source) {
             $sources[$source['Source']['source_id']] = $source['Source']['name'];
         }
-
+        
         return $sources;
     }
 
@@ -91,7 +92,8 @@ class NewsController extends AppController {
 
     public function index() {
         $this->basic_index();
-        $this->set('news_list', $this->Paginator->paginate());
+        $conditions = array('NewsStatus.id !=' => STATUS_ELIMINADA, 'id !=' => STATUS_SEM_FILTRAR);
+        $this->set('news_list', $this->Paginator->paginate($conditions));
         $this->set('filters', array(
             'status' => '',
             'source' => '',
@@ -201,7 +203,9 @@ class NewsController extends AppController {
 	}
     
     public function news_candidatas(){
-        
+        $this->News->recursive = 0;
+        $conditions = array('NewsStatus.id ==' => STATUS_SEM_FILTRAR);
+        $this->set('news_list', $this->Paginator->paginate($conditions));
     }
     
     public function start_crawler(){
@@ -313,7 +317,7 @@ class NewsController extends AppController {
 
         return $this->redirect($this->referer());
     }
-
+    
     public function change_status() {
         $this->layout = "ajax";
         $success = false;
@@ -329,7 +333,18 @@ class NewsController extends AppController {
         $this->set('response', array('success' => $success,
             'news_status' => $news['NewsStatus']));
     }
-
+    
+    public function acceptNews($id=null) {  
+        if(!empty($id)){
+            $this->loadModel('News');
+            /*debug($id);
+            exit(-1);*/
+            $newInfo = array('News' => array('news_id' => $id, 'news_status_id' => STATUS_SEM_REVISAO));
+            $this->News->save($newInfo);
+            return $this->redirect(array('action' => 'news_candidatas'));  
+        }
+    }
+    
     /*private function load_actors() {
         $this->loadModel('Annotation');
         $actors = array();
