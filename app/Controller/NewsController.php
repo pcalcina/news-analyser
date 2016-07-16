@@ -39,7 +39,8 @@ class NewsController extends AppController {
 
     private function load_statuses($labelForNull) {
         $this->loadModel('NewsStatus');
-        $raw_statuses = $this->NewsStatus->find('all', array('conditions' => array('NewsStatus.id !=' => STATUS_ELIMINADA)));
+        $raw_statuses = $this->NewsStatus->find('all', 
+            array('conditions' => array('NewsStatus.id !=' => STATUS_ELIMINADA)));
         $statuses = array(null => $labelForNull);
 
         foreach ($raw_statuses as $status) {
@@ -127,11 +128,8 @@ class NewsController extends AppController {
     public function filter() {
         $this->basic_index();
         $this->set('show_filter', true);
-
         $this->News->recursive = 0;
-
         $this->Paginator->settings = array('order' => array('News.date' => 'desc'));
-
         $conditions = array('News.news_status_id != ' => STATUS_ELIMINADA);
 
         if (!empty($this->request->query['status'])) {
@@ -203,6 +201,11 @@ class NewsController extends AppController {
 	}
     
     public function news_candidatas(){
+        
+    }
+    
+    public function start_crawler(){
+        $this->layout = "ajax";
         
     }
     

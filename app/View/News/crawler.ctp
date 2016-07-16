@@ -14,9 +14,10 @@
 <?php echo $this->Html->css('jquery.qtip.min.css'); ?>
 
 <script>
+var URL_START_CRAWLING = "<?php echo Router::url(array('controller' => 'news', 'action' => 'start_crawler')); ?>";
+
 $(document).ready(function () {
     addDatePicker($('.datepicker')); 
-
     $("#keywords").select2({
         tags: true,
         placeholder: "Digite as palavras chave",
@@ -45,13 +46,12 @@ function initCrawling(){
     var endDate = $("#data-final").val();
     var keywords = $("#keywords").select2('val');
     var debugString = "Iniciando crawling " + startDate + ", " + endDate + ", " + keywords;
-
     
     if(startDate && endDate && keywords){
         crawlingButton.prop("disabled", true);
         console.log(debugString);
-        alert(debugString);
-        crawlingButton.prop("disabled", false);
+        $.post(URL_START_CRAWLING, {startDate:startDate, endDate:endDate, keywords:keywords});
+        //crawlingButton.prop("disabled", false);
     }
     else if(!startDate){
         alert("Preencher data inicial");
