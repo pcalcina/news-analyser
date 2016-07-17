@@ -559,7 +559,7 @@ $this->Html->script('jquery-2.1.1.min.js',array('inline'=>false)); ?>
         <li><?php echo $this->Html->link(__('< Voltar'), 
     		            $this->request->referer()); ?>
         </li>
-	    <li style='vertical-align:middle !important;'  ><?php echo $this->Html->link(__('List Eventos'), array('controller' => 'events', 'action' => 'index')); ?>
+	    <li style='vertical-align:middle !important;'  ><?php echo $this->Html->link(__('Lista de Eventos'), array('controller' => 'events', 'action' => 'index')); ?>
         </li>
         <li style='vertical-align:middle !important;'  ><?php echo $this->Html->link(__('Identificar eventos'), array('controller' => 'annotation_groups', 'action' => 'possible_groups')); ?>
             </li> 
