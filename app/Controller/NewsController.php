@@ -7,6 +7,7 @@ define("STATUS_SEM_CODIFICAR", "2");
 define("STATUS_CODIFICADA", "3");
 define("STATUS_COM_EVENTO", "4");
 define("STATUS_ELIMINADA", "5");
+define("STATUS_SEM_FILTRAR", "6");
 
 function to_utf8($string) {
 // From http://w3.org/International/questions/qa-forms-utf-8.html
@@ -39,14 +40,19 @@ class NewsController extends AppController {
 
     private function load_statuses($labelForNull) {
         $this->loadModel('NewsStatus');
-        $raw_statuses = $this->NewsStatus->find('all', array('conditions' => array('NewsStatus.id !=' => STATUS_ELIMINADA)));
+        $raw_statuses = $this->NewsStatus->find('all', 
+            array('conditions' => array('NewsStatus.id !=' => STATUS_ELIMINADA, 'id !=' => STATUS_SEM_FILTRAR)));
         $statuses = array(null => $labelForNull);
 
         foreach ($raw_statuses as $status) {
             $statuses[$status['NewsStatus']['id']] = $status['NewsStatus']['description'];
         }
-
+        
         return $statuses;
+    }
+    
+    public function crawler(){
+    
     }
 
     private function load_sources() {
@@ -57,7 +63,7 @@ class NewsController extends AppController {
         foreach ($raw_sources as $source) {
             $sources[$source['Source']['source_id']] = $source['Source']['name'];
         }
-
+        
         return $sources;
     }
 
@@ -90,7 +96,8 @@ class NewsController extends AppController {
 
     public function index() {
         $this->basic_index();
-        $this->set('news_list', $this->Paginator->paginate());
+        $conditions = array('NewsStatus.id !=' => STATUS_ELIMINADA, 'id !=' => STATUS_SEM_FILTRAR);
+        $this->set('news_list', $this->Paginator->paginate($conditions));
         $this->set('filters', array(
             'status' => '',
             'source' => '',
@@ -127,11 +134,8 @@ class NewsController extends AppController {
     public function filter() {
         $this->basic_index();
         $this->set('show_filter', true);
-
         $this->News->recursive = 0;
-
         $this->Paginator->settings = array('order' => array('News.date' => 'desc'));
-
         $conditions = array('News.news_status_id != ' => STATUS_ELIMINADA);
 
         if (!empty($this->request->query['status'])) {
@@ -169,7 +173,8 @@ class NewsController extends AppController {
         try {
             $news_list = $this->Paginator->paginate($conditions);
             $this->set('news_list', $news_list);
-        } catch (Exception $exception) {
+        } 
+        catch (Exception $exception) {
             unset($this->request->params['named']['page']);
             $this->set('news_list', $this->Paginator->paginate($conditions));
         }
@@ -198,7 +203,62 @@ class NewsController extends AppController {
         }
     }
 
-
+    public function news_candidatas(){
+        $this->News->recursive = 0;
+        $conditions = array('NewsStatus.id ==' => STATUS_SEM_FILTRAR);
+        $this->set('news_list', $this->Paginator->paginate($conditions));
+    }
+    
+    function format_date_for_url($date) {
+        $splitted_date = array_reverse(explode('-', $date));
+        return implode('%2F', $splitted_date);
+    }
+    
+    public function start_crawler(){
+        $this->layout = "ajax";
+        $initial_date = $this->format_date_for_url($this->request->data['startDate']);
+        $final_date = $this->format_date_for_url($this->request->data['endDate']);
+        $keywords = implode(' ', $this->request->data['keywords']);
+        $url = "https://localhost:9080/crawl.json";
+        $pid = $this->crawler_exec($keywords, $initial_date, $final_date);
+        $this->set('crawler_id', $pid);
+    }
+    
+    private function crawler_exec($keywords, $initial_date, $final_date){
+        $crawler_dir = "/home/pablo/Programming/news-crawler";
+        $crawler_name = "folha-spider";
+        $command = "cd {$crawler_dir} ; scrapy crawl {$crawler_name} " .
+                   " -a keywords={$keywords} " . 
+                   " -a initial_date={$initial_date} " . 
+                   " -a final_date={$final_date}";
+//        $last_line = system($command, $retval);
+//        debug($last_line);
+//        debug($retval);
+//        exit;
+        $process = new Process($command);
+        return $process->getPid();
+    }
+    
+    public function crawler_status($crawler_id){
+        $this->layout = "ajax";    
+        $process = new Process();
+        $process->setPid($crawler_id);
+        $this->set("running", $process->status());
+    }
+    
+    private function crawler_request($url, $keywords, $initial_date, $final_date){
+        $fields = array('request' => array('url' => $url, 
+                     'meta' => array('keywords' => $keywords, 'initial_date' => $initial_date, 'final_date' => $final_date)), 
+                     'spider_name' => 'folha-spider');
+        $postvars = http_build_query($fields);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, count($fields));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postvars);
+        $result = curl_exec($ch);
+        curl_close($ch);
+    }
+    
     protected function getTagsById ($tags) {
         $tagsById = array();
         foreach ($tags as $tag) {
@@ -303,7 +363,7 @@ class NewsController extends AppController {
 
         return $this->redirect($this->referer());
     }
-
+    
     public function change_status() {
         $this->layout = "ajax";
         $success = false;
@@ -319,49 +379,59 @@ class NewsController extends AppController {
         $this->set('response', array('success' => $success,
             'news_status' => $news['NewsStatus']));
     }
-
-    /*private function load_actors() {
-        $this->loadModel('Annotation');
-        $actors = array();
-        $raw_annotation = $this->Annotation->find('all', array('conditions' => array('Annotation.tag_id ==' => '1',
-                'Annotation.value !=' => 'NA'),
-            'fields' => array('DISTINCT Annotation.value')));
-
-        foreach ($raw_annotation as $a) {
-            if (!empty($a['Annotation']['value'])) {
-                if ($a['Annotation']['value'][0] != '{') {
-                    $actors[] = trim($a['Annotation']['value']);
-                } else {
-                    $v = json_decode($a['Annotation']['value']);
-                    if (!empty($v->actors)) {
-                        $actors[] = trim($v->actors);
-                    }
-                }
-            }
+    
+    public function acceptNews($id=null) {  
+        if(!empty($id)){
+            $this->loadModel('News');
+            /*debug($id);
+            exit(-1);*/
+            $newInfo = array('News' => array('news_id' => $id, 'news_status_id' => STATUS_SEM_REVISAO));
+            $this->News->save($newInfo);
+            return $this->redirect(array('action' => 'news_candidatas'));  
         }
-        sort($actors);
-        return $actors;
-    }*/
-
-   /* private function load_cities() {
-        $this->loadModel('Annotation');
-        $cities = array();
-        $raw_annotation = $this->Annotation->find('all', array('conditions' => array('Annotation.tag_id ==' => '2',
-                'Annotation.value !=' => 'NA'),
-            'fields' => array('DISTINCT Annotation.value')));
-
-        foreach ($raw_annotation as $a) {
-            if (!empty($a['Annotation']['value'])) {
-                $cities[] = trim($a['Annotation']['value']);
-            }
-        }
-        sort($cities);
-        return $cities;
     }
-*/
-    /*public function get_actors() {
-        $this->layout = "ajax";
-        $this->set('actors', $this->load_actors());
-    }*/
+}
 
+class Process {
+    private $pid;
+    private $command;
+
+    public function __construct($cl=false){
+        if ($cl != false){
+            $this->command = $cl;
+            $this->runCom();
+        }
+    }
+    private function runCom(){
+        $command = $this->command.' > /dev/null 2>&1 & echo $!';
+        exec($command, $op);
+        $this->pid = (int)$op[0];
+    }
+
+    public function setPid($pid){
+        $this->pid = $pid;
+    }
+
+    public function getPid(){
+        return $this->pid;
+    }
+
+    public function status(){
+        $command = 'ps -p '.$this->pid;
+        exec($command,$op);
+        if (!isset($op[1]))return false;
+        else return true;
+    }
+
+    public function start(){
+        if ($this->command != '')$this->runCom();
+        else return true;
+    }
+
+    public function stop(){
+        $command = 'kill '.$this->pid;
+        exec($command);
+        if ($this->status() == false)return true;
+        else return false;
+    }
 }

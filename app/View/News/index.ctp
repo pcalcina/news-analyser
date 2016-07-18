@@ -7,7 +7,7 @@
 <?php //echo $this->Html->css('select2-latest.min.css'); ?>
 <?php echo $this->Html->css('chosen.css'); ?>
 <style>
-.status-confirmed {text-align:center; background-color:green; color:white};
+.status-confirmed {text-align:centeIDr; background-color:green; color:white};
 </style>
 
 <script>
@@ -59,9 +59,14 @@ function confirmNews(newsId){
 <tr >
 <td style='vertical-align:middle !important;'><h2><?php echo __('Notícias'); ?></h2></td>
 <td style='vertical-align:middle !important;' 
+    class='actions'><?php echo $this->Html->link(__(' Crawler '), array('controller' => 'news', 'action' => 'crawler')); ?></td>
+<td style='vertical-align:middle !important;'
+    class='actions'><?php echo $this->Html->link(__('Notícias Candidatas'), array('controller' => 'news', 'action' => 'news_candidatas')); ?></td>
+<td style='vertical-align:middle !important;' 
     class='actions'><?php echo $this->Html->link(__('Identificar eventos'), array('controller' => 'annotation_groups', 'action' => 'possible_groups')); ?></td>
 <td style='vertical-align:middle !important;' 
     class='actions'><?php echo $this->Html->link(__('Lista de eventos'), array('controller' => 'events', 'action' => 'index')); ?></td>
+
 <!--td style='vertical-align:middle !important;'
     class='actions'><? php echo $this->Html->link(__('Gerenciar tags'), array('controller' => 'tags', 'action' => 'index')); ?></td-->
 <td style='vertical-align:middle !important;'>
@@ -85,7 +90,7 @@ function confirmNews(newsId){
 </table>
 </div>
 
-    <div id='filtro' style='display:<?php echo ($show_filter)? 'block': 'none'; ?>'>
+<div id='filtro' style='display:<?php echo ($show_filter)? 'block': 'none'; ?>'>
     
     <?php echo $this->Form->create(false, 
         array('type' => 'get', 
@@ -141,9 +146,7 @@ function confirmNews(newsId){
     </table>
     </span>
     </fieldset>
-    </div>
-
-
+</div>
 
 <span>
 <p>
@@ -153,12 +156,7 @@ function confirmNews(newsId){
 </p>
 </span>
 
-
-
-
-
-	
-	<table cellpadding="0" cellspacing="0" style='font-size:10pt'>
+<table cellpadding="0" cellspacing="0" style='font-size:10pt'>
 	<tr>
 	    <th><?php echo $this->Paginator->sort('news_id', 'ID'); ?></th>
 	    <th><?php echo $this->Paginator->sort('NewsStatus.description', 'Status'); ?></th>
