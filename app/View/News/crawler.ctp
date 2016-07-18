@@ -9,13 +9,13 @@
 <?php $this->Html->script('moment.js',array('inline'=>false)); ?>
 <?php $this->Html->script('bootstrap-sortable.js',array('inline'=>false)); ?>
 <?php echo $this->Html->css('jquery-ui-1.10.4.custom.css'); ?>
-<?php echo $this->Html->css('select2.css'); ?>
+<?php echo $this->Html->css('select2-new.css'); ?>
 <?php echo $this->Html->css('tablesorter.css'); ?>
 <?php echo $this->Html->css('jquery.qtip.min.css'); ?>
 
 <script>
 var URL_START_CRAWLING = "<?php echo Router::url(array('controller' => 'news', 'action' => 'start_crawler')); ?>";
-
+var URL_CRAWLER_STATUS = "<?php echo Router::url(array('controller' => 'news', 'action' => 'crawler_status')); ?>";
 $(document).ready(function () {
     addDatePicker($('.datepicker')); 
     $("#keywords").select2({
@@ -50,8 +50,31 @@ function initCrawling(){
     if(startDate && endDate && keywords){
         crawlingButton.prop("disabled", true);
         console.log(debugString);
-        $.post(URL_START_CRAWLING, {startDate:startDate, endDate:endDate, keywords:keywords});
-        //crawlingButton.prop("disabled", false);
+        $('#processing_crawler').dialog({
+            modal:true, 
+            closeOnEscape: false,
+            //beforeClose: function (event, ui) { return false; },
+            dialogClass: "noclose"
+        });
+        $.post(URL_START_CRAWLING, {startDate:startDate, endDate:endDate, keywords:keywords}, function(crawling_response){
+            console.log("Response");
+            console.log(crawling_response);
+            console.log("id = " + crawling_response.crawler_id)
+            var url_status = URL_CRAWLER_STATUS + '/' + crawling_response.crawler_id;
+            console.log("url_status = " + url_status);
+            
+            var timer = setInterval(function(){ 
+                $.get(url_status, function(status_response){
+                    console.log(status_response);
+                    if(!status_response.running){
+                        clearInterval(timer);
+                        $('#processing_crawler').dialog("close");
+                        $('#crawling_finished').dialog();
+                    }
+                }, 'json');
+            }, 5 * 1000);
+        }, 'json');
+
     }
     else if(!startDate){
         alert("Preencher data inicial");
@@ -76,7 +99,7 @@ function initCrawling(){
 	              array('controller' => 'news', 'action' => 'index')); ?>
         </li>
         <li style='vertical-align:middle !important;'>
-            <?php echo $this->Html->link(__('Noticias Candidatas'), 
+            <?php echo $this->Html->link(__('Notícias Candidatas'), 
                   array('controller' => 'news', 'action' => 'news_candidatas')); ?>
         </li> 
     </ul>
@@ -117,4 +140,22 @@ function initCrawling(){
 </table>
 </form>
  </div>
-<div id="message-loading" style='display:none'>Loading ...</div>
+<div id="message-loading"    style='display:none'>Loading ...</div>
+<div id="processing_crawler" style='display:none;text-align:center'>
+    <span align="center">
+    <h2>Crawler em execução</h2>
+    <h3>Não recarregue esta página</h3>
+    <?php echo $this->Html->image("processing.gif", array("width"=>"200px", "alt" => __("Processing"), "title" => __("Processing"))); ?>
+    </span>    
+</div>
+
+<div id="crawling_finished" style='display:none;text-align:center'>
+<span>
+<h2> Crawling finalizado </h2>
+<?php echo $this->Html->link(__('Revisar notícias candidatas'), 
+                  array('controller' => 'news', 'action' => 'news_candidatas')); ?>
+</span>
+</div>                  
+                  
+                  
+                  

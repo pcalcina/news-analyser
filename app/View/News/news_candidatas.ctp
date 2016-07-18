@@ -57,7 +57,7 @@ function showContent(news_id){
 	<tr id="news-row-<?php echo h($news['News']['news_id']);?>">
             <td><?php echo h($news['News']['news_id']); ?>&nbsp;</td>
             <td><a href="javascript:showContent(<?php echo $news['News']['news_id']?>)">
-                <?php echo h($news['News']['title']); ?>&nbsp; </a>
+                <?php echo h($news['News']['title']); ?>&nbsp;</a>
             </td>
             
             <td><?php echo h($news['News']['date']); ?>&nbsp;</td>

@@ -50,6 +50,10 @@ class NewsController extends AppController {
         
         return $statuses;
     }
+    
+    public function crawler(){
+    
+    }
 
     private function load_sources() {
         $this->loadModel('Source');
@@ -169,7 +173,8 @@ class NewsController extends AppController {
         try {
             $news_list = $this->Paginator->paginate($conditions);
             $this->set('news_list', $news_list);
-        } catch (Exception $exception) {
+        } 
+        catch (Exception $exception) {
             unset($this->request->params['named']['page']);
             $this->set('news_list', $this->Paginator->paginate($conditions));
         }
@@ -198,19 +203,60 @@ class NewsController extends AppController {
         }
     }
 
-    public function crawler() {
-
-	}
-    
     public function news_candidatas(){
         $this->News->recursive = 0;
         $conditions = array('NewsStatus.id ==' => STATUS_SEM_FILTRAR);
         $this->set('news_list', $this->Paginator->paginate($conditions));
     }
     
+    function format_date_for_url($date) {
+        $splitted_date = array_reverse(explode('-', $date));
+        return implode('%2F', $splitted_date);
+    }
+    
     public function start_crawler(){
         $this->layout = "ajax";
-        
+        $initial_date = $this->format_date_for_url($this->request->data['startDate']);
+        $final_date = $this->format_date_for_url($this->request->data['endDate']);
+        $keywords = implode(' ', $this->request->data['keywords']);
+        $url = "https://localhost:9080/crawl.json";
+        $pid = $this->crawler_exec($keywords, $initial_date, $final_date);
+        $this->set('crawler_id', $pid);
+    }
+    
+    private function crawler_exec($keywords, $initial_date, $final_date){
+        $crawler_dir = "/home/pablo/Programming/news-crawler";
+        $crawler_name = "folha-spider";
+        $command = "cd {$crawler_dir} ; scrapy crawl {$crawler_name} " .
+                   " -a keywords={$keywords} " . 
+                   " -a initial_date={$initial_date} " . 
+                   " -a final_date={$final_date}";
+//        $last_line = system($command, $retval);
+//        debug($last_line);
+//        debug($retval);
+//        exit;
+        $process = new Process($command);
+        return $process->getPid();
+    }
+    
+    public function crawler_status($crawler_id){
+        $this->layout = "ajax";    
+        $process = new Process();
+        $process->setPid($crawler_id);
+        $this->set("running", $process->status());
+    }
+    
+    private function crawler_request($url, $keywords, $initial_date, $final_date){
+        $fields = array('request' => array('url' => $url, 
+                     'meta' => array('keywords' => $keywords, 'initial_date' => $initial_date, 'final_date' => $final_date)), 
+                     'spider_name' => 'folha-spider');
+        $postvars = http_build_query($fields);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, count($fields));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postvars);
+        $result = curl_exec($ch);
+        curl_close($ch);
     }
     
     protected function getTagsById ($tags) {
@@ -344,49 +390,48 @@ class NewsController extends AppController {
             return $this->redirect(array('action' => 'news_candidatas'));  
         }
     }
-    
-    /*private function load_actors() {
-        $this->loadModel('Annotation');
-        $actors = array();
-        $raw_annotation = $this->Annotation->find('all', array('conditions' => array('Annotation.tag_id ==' => '1',
-                'Annotation.value !=' => 'NA'),
-            'fields' => array('DISTINCT Annotation.value')));
+}
 
-        foreach ($raw_annotation as $a) {
-            if (!empty($a['Annotation']['value'])) {
-                if ($a['Annotation']['value'][0] != '{') {
-                    $actors[] = trim($a['Annotation']['value']);
-                } else {
-                    $v = json_decode($a['Annotation']['value']);
-                    if (!empty($v->actors)) {
-                        $actors[] = trim($v->actors);
-                    }
-                }
-            }
+class Process {
+    private $pid;
+    private $command;
+
+    public function __construct($cl=false){
+        if ($cl != false){
+            $this->command = $cl;
+            $this->runCom();
         }
-        sort($actors);
-        return $actors;
-    }*/
-
-   /* private function load_cities() {
-        $this->loadModel('Annotation');
-        $cities = array();
-        $raw_annotation = $this->Annotation->find('all', array('conditions' => array('Annotation.tag_id ==' => '2',
-                'Annotation.value !=' => 'NA'),
-            'fields' => array('DISTINCT Annotation.value')));
-
-        foreach ($raw_annotation as $a) {
-            if (!empty($a['Annotation']['value'])) {
-                $cities[] = trim($a['Annotation']['value']);
-            }
-        }
-        sort($cities);
-        return $cities;
     }
-*/
-    /*public function get_actors() {
-        $this->layout = "ajax";
-        $this->set('actors', $this->load_actors());
-    }*/
+    private function runCom(){
+        $command = $this->command.' > /dev/null 2>&1 & echo $!';
+        exec($command, $op);
+        $this->pid = (int)$op[0];
+    }
 
+    public function setPid($pid){
+        $this->pid = $pid;
+    }
+
+    public function getPid(){
+        return $this->pid;
+    }
+
+    public function status(){
+        $command = 'ps -p '.$this->pid;
+        exec($command,$op);
+        if (!isset($op[1]))return false;
+        else return true;
+    }
+
+    public function start(){
+        if ($this->command != '')$this->runCom();
+        else return true;
+    }
+
+    public function stop(){
+        $command = 'kill '.$this->pid;
+        exec($command);
+        if ($this->status() == false)return true;
+        else return false;
+    }
 }
