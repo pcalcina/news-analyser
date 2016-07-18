@@ -60,10 +60,13 @@ function confirmNews(newsId){
 <td style='vertical-align:middle !important;'><h2><?php echo __('Notícias'); ?></h2></td>
 <td style='vertical-align:middle !important;' 
     class='actions'><?php echo $this->Html->link(__(' Crawler '), array('controller' => 'news', 'action' => 'crawler')); ?></td>
+<td style='vertical-align:middle !important;'
+    class='actions'><?php echo $this->Html->link(__('Notícias Candidatas'), array('controller' => 'news', 'action' => 'news_candidatas')); ?></td>
 <td style='vertical-align:middle !important;' 
     class='actions'><?php echo $this->Html->link(__('Identificar eventos'), array('controller' => 'annotation_groups', 'action' => 'possible_groups')); ?></td>
 <td style='vertical-align:middle !important;' 
     class='actions'><?php echo $this->Html->link(__('Lista de eventos'), array('controller' => 'events', 'action' => 'index')); ?></td>
+
 <!--td style='vertical-align:middle !important;'
     class='actions'><? php echo $this->Html->link(__('Gerenciar tags'), array('controller' => 'tags', 'action' => 'index')); ?></td-->
 <td style='vertical-align:middle !important;'>

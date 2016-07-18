@@ -94,7 +94,7 @@ function initCrawling(){
         <li><?php echo $this->Html->link(__('< Voltar'), 
     		            $this->request->referer()); ?>
         </li>
-	    <li style='vertical-align:middle !important;'>
+	<li style='vertical-align:middle !important;'>
 	        <?php echo $this->Html->link(__('< Todas as notícias'), 
 	              array('controller' => 'news', 'action' => 'index')); ?>
         </li>
