@@ -225,16 +225,12 @@ class NewsController extends AppController {
     }
     
     private function crawler_exec($keywords, $initial_date, $final_date){
-        $crawler_dir = "/home/pablo/Programming/news-crawler";
+        $crawler_dir = "/home/news_crawler/";
         $crawler_name = "folha-spider";
-        $command = "cd {$crawler_dir} ; scrapy crawl {$crawler_name} " .
+        $command = "cd {$crawler_dir} ; /usr/local/bin/scrapy crawl {$crawler_name} " .
                    " -a keywords={$keywords} " . 
                    " -a initial_date={$initial_date} " . 
                    " -a final_date={$final_date}";
-//        $last_line = system($command, $retval);
-//        debug($last_line);
-//        debug($retval);
-//        exit;
         $process = new Process($command);
         return $process->getPid();
     }
@@ -383,8 +379,6 @@ class NewsController extends AppController {
     public function acceptNews($id=null) {  
         if(!empty($id)){
             $this->loadModel('News');
-            /*debug($id);
-            exit(-1);*/
             $newInfo = array('News' => array('news_id' => $id, 'news_status_id' => STATUS_SEM_REVISAO));
             $this->News->save($newInfo);
             return $this->redirect(array('action' => 'news_candidatas'));  

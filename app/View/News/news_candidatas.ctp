@@ -47,7 +47,6 @@ function showContent(news_id){
 	    <th><?php echo $this->Paginator->sort('news_id', 'ID'); ?></th>
 	    <th><?php echo $this->Paginator->sort('title', 'Título'); ?></th>
 	    <th><?php echo $this->Paginator->sort('date', 'Data'); ?></th>
-	    <th><?php echo $this->Paginator->sort('Source.name', 'Fonte'); ?></th>
 	    <th class="actions">
                 <?php echo __('', ''); ?>
                 <?php echo __('', ''); ?></th>
@@ -62,7 +61,6 @@ function showContent(news_id){
             
             <td><?php echo h($news['News']['date']); ?>&nbsp;</td>
 
-            <td><?php echo h($news['Source']['name']); ?> </td>
             <td class="actions">
                 <?php echo $this->Form->postLink(__('Eliminar'), 
                             array('action' => 'delete', $news['News']['news_id']), null, __('Eliminar noticia # %s?', $news['News']['news_id'])); ?>

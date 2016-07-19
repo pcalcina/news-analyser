@@ -144,7 +144,11 @@ function initCrawling(){
 <div id="processing_crawler" style='display:none;text-align:center'>
     <span align="center">
     <h2>Crawler em execução</h2>
-    <h3>Não recarregue esta página</h3>
+<!--    <h3>Não recarregue esta página</h3> -->
+<br/>
+<?php echo $this->Html->link(__('Ver avanço'), 
+                  array('controller' => 'news', 'action' => 'news_candidatas')); ?>
+<br/>
     <?php echo $this->Html->image("processing.gif", array("width"=>"200px", "alt" => __("Processing"), "title" => __("Processing"))); ?>
     </span>    
 </div>
