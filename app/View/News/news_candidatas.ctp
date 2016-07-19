@@ -45,9 +45,9 @@ function showContent(news_id){
     <table cellpadding="0" cellspacing="0" style='font-size:10pt'>
 	<tr>
 	    <th><?php echo $this->Paginator->sort('news_id', 'ID'); ?></th>
+	    <th> </th>
 	    <th><?php echo $this->Paginator->sort('title', 'Título'); ?></th>
 	    <th><?php echo $this->Paginator->sort('date', 'Data'); ?></th>
-	    <th><?php echo $this->Paginator->sort('Source.name', 'Fonte'); ?></th>
 	    <th class="actions">
                 <?php echo __('', ''); ?>
                 <?php echo __('', ''); ?></th>
@@ -56,13 +56,13 @@ function showContent(news_id){
 	<?php foreach ($news_list as $news): ?>
 	<tr id="news-row-<?php echo h($news['News']['news_id']);?>">
             <td><?php echo h($news['News']['news_id']); ?>&nbsp;</td>
+            <td><input class="selected-news" type="checkbox" data-news-id="<?php echo h($news['News']['news_id']); ?>"> </td>
             <td><a href="javascript:showContent(<?php echo $news['News']['news_id']?>)">
                 <?php echo h($news['News']['title']); ?>&nbsp;</a>
             </td>
             
             <td><?php echo h($news['News']['date']); ?>&nbsp;</td>
 
-            <td><?php echo h($news['Source']['name']); ?> </td>
             <td class="actions">
                 <?php echo $this->Form->postLink(__('Eliminar'), 
                             array('action' => 'delete', $news['News']['news_id']), null, __('Eliminar noticia # %s?', $news['News']['news_id'])); ?>
