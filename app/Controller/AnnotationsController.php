@@ -8,12 +8,25 @@ App::uses('AppController', 'Controller');
  */
 class AnnotationsController extends AppController {
  
-	public $components = array('Paginator');
- 
-	public function index() {
-		$this->Annotation->recursive = 0;
-		$this->set('annotations', $this->Paginator->paginate());
-	}
+    public function index() {
+        $this->loadModel('Tag');
+        $this->loadModel('TagDetail');
+        $this->Annotation->recursive = 0;
+        $tags = $this->Tag->find('list', array('fields'=>array('tag_id','name')));
+        $tagDetailsRaw = $this->TagDetail->find('all');
+        $tagDetails = array();
+        
+        foreach($tagDetailsRaw as $tagDetail){
+            $tagId = $tagDetail['TagDetail']['tag_id'];
+            $name = $tags[$tagId];
+            $title = $tagDetail['TagDetail']['title'];
+            if(!empty($title)){
+                $name .= " ($title)";
+            }
+            $tagDetails[$tagDetail['TagDetail']['tag_detail_id']] = $name;
+        }
+        $this->set('tag_details', $tagDetails);
+    }
  
 	public function view($id = null) {
 		if (!$this->Annotation->exists($id)) {
@@ -139,19 +152,55 @@ class AnnotationsController extends AppController {
             
 	}
 	
-	public function deleteAjax(){
-		$this->layout = "ajax";
-		$annotationId = $this->request->data['id'];
-		$this->Annotation->id = $this->request->data['id'];
+    public function deleteAjax(){
+        $this->layout = "ajax";
+        $annotationId = $this->request->data['id'];
+        $this->Annotation->id = $this->request->data['id'];
                 $this->request->onlyAllow('post', 'delete');
                 
-		if ($this->Annotation->exists()) { 
-                     
-                    $this->loadModel('AnnotationDetail');
-                    $this->AnnotationDetail->deleteAll(array('AnnotationDetail.annotation_id' => $annotationId)); 
-		    $this->Annotation->delete(); 
-                }
+        if ($this->Annotation->exists()) {
+            $this->loadModel('AnnotationDetail');
+            $this->AnnotationDetail->deleteAll(array('AnnotationDetail.annotation_id' => $annotationId)); 
+            $this->Annotation->delete(); 
+        }
+    }
+    
+    public function filterAjax() {
+        $this->layout = "ajax";
+        $this->loadModel('AnnotationDetail');
+        $this->request->onlyAllow('get');
+        $results = array();
+        $tagDetailId = $this->params['url']['tagDetailId'];
+        $showReviewed = $this->params['url']['showReviewed'] === 'true'? 1 : 0;        
+        
+        $resultsRaw = $this->AnnotationDetail->find('all', 
+            array('conditions' => array('AnnotationDetail.tag_detail_id' => $tagDetailId, 
+                                        'reviewed' => array(0, $showReviewed))));
+        foreach($resultsRaw as $r){                    
+            $url = Router::url([
+                'controller' => 'News',
+                'action' => 'annotate',
+                $r['Annotation']['news_id']
+            ]);
+            $results[] = array($r['AnnotationDetail']['annotation_detail_id'],
+                               $url,
+                               $r['AnnotationDetail']['reviewed'],
+                               $r['AnnotationDetail']['value']);
+        }
+        $this->set('results', $results);
 	}
+    
+    public function replaceAjax(){
+        $this->layout = "ajax";
+        $this->loadModel('AnnotationDetail');
+        $annotationDetails = $this->request->data['annotationDetails'];
+        $replaceText = $this->request->data['replaceText'];
+        $this->AnnotationDetail->updateAll(
+            array('value' => "'{$replaceText}'", 'reviewed' => 1),
+            array('annotation_detail_id' => $annotationDetails)
+        );
+        $this->set('response', array('success' => 'true'));
+    }
         
 	public function delete($id = null) {
 		$this->Annotation->id = $id;
