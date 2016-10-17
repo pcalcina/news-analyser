@@ -177,11 +177,11 @@ class AnnotationsController extends AppController {
             array('conditions' => array('AnnotationDetail.tag_detail_id' => $tagDetailId, 
                                         'reviewed' => array(0, $showReviewed))));
         foreach($resultsRaw as $r){                    
-            $url = Router::url([
+            $url = Router::url(array(
                 'controller' => 'News',
                 'action' => 'annotate',
                 $r['Annotation']['news_id']
-            ]);
+            ));
             $results[] = array($r['AnnotationDetail']['annotation_detail_id'],
                                $url,
                                $r['AnnotationDetail']['reviewed'],
