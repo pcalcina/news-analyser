@@ -45,6 +45,7 @@ function showContent(news_id){
     <table cellpadding="0" cellspacing="0" style='font-size:10pt'>
 	<tr>
 	    <th><?php echo $this->Paginator->sort('news_id', 'ID'); ?></th>
+	    <th> </th>
 	    <th><?php echo $this->Paginator->sort('title', 'Título'); ?></th>
 	    <th><?php echo $this->Paginator->sort('date', 'Data'); ?></th>
 	    <th class="actions">
@@ -55,6 +56,7 @@ function showContent(news_id){
 	<?php foreach ($news_list as $news): ?>
 	<tr id="news-row-<?php echo h($news['News']['news_id']);?>">
             <td><?php echo h($news['News']['news_id']); ?>&nbsp;</td>
+            <td><input class="selected-news" type="checkbox" data-news-id="<?php echo h($news['News']['news_id']); ?>"> </td>
             <td><a href="javascript:showContent(<?php echo $news['News']['news_id']?>)">
                 <?php echo h($news['News']['title']); ?>&nbsp;</a>
             </td>
