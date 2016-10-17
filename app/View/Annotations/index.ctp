@@ -22,8 +22,7 @@
     <tr>
         
     <td><?php echo $this->Form->select('tag_detail', $tag_details, 
-                    array(//'empty' => 'Selecione uma variável',
-                          'id'    => 'selectTagDetailId')); ?>
+                    array('id'    => 'selectTagDetailId')); ?>
     </td>
     <td>
     <?php echo $this->Form->input('show_reviewed', 
@@ -64,10 +63,10 @@ var URL_FILTER = '<?php echo Router::url(array('controllers' => 'annotation',
 var URL_REPLACE = '<?php echo Router::url(array('controllers' => 'annotation', 
                                                 'action'      => 'replaceAjax')); ?>';                                               
 $(document).ready(function(){
-    $("#selectTagDetailId").select2({width:'resolve', dropdownAutoWidth : true, placeholder:'Selecione'});
-   // $("#selectTagDetailId").on("change", function (e) {
-   //     updateAnnotations();
-    //});
+    $("#selectTagDetailId").select2({
+            width:'resolve', 
+            dropdownAutoWidth : true, 
+            placeholder: 'Selecione uma etiqueta'});
     
     $("#update-annotations").on("click", function(e){
         updateAnnotations();

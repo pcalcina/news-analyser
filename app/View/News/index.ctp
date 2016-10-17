@@ -66,6 +66,9 @@ function confirmNews(newsId){
     class='actions'><?php echo $this->Html->link(__('Identificar eventos'), array('controller' => 'annotation_groups', 'action' => 'possible_groups')); ?></td>
 <td style='vertical-align:middle !important;' 
     class='actions'><?php echo $this->Html->link(__('Lista de eventos'), array('controller' => 'events', 'action' => 'index')); ?></td>
+<td style='vertical-align:middle !important;' 
+    class='actions'><?php echo $this->Html->link(__('Correção de Anotações'), array('controller' => 'annotations', 'action' => 'index')); ?></td>
+
 
 <!--td style='vertical-align:middle !important;'
     class='actions'><? php echo $this->Html->link(__('Gerenciar tags'), array('controller' => 'tags', 'action' => 'index')); ?></td-->
