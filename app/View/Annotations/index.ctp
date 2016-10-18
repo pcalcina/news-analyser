@@ -74,11 +74,13 @@ $(document).ready(function(){
 });
 
 function updateAnnotations(){
+    $('#loading-message').show();
     $.get(URL_FILTER + '?'+ $.param(
             {tagDetailId: $("#selectTagDetailId").select2('val'),
              showReviewed: $("#show_reviewed").is(':checked')}), 
-        function(response){
+        function(response){            
             fillAnnotationDetails(response);
+            $('#loading-message').hide();
     }, 'json');
 }
 
@@ -210,15 +212,19 @@ function showReplaceDialog(rawData){
 </div>
 
 <table id="original-results" style="display:none"> 
-                    <thead> 
-                        <tr>                            
-                            <th>id</th>                            
-                            <th>Notícia</th>
-                            <th>Revisado</th>                            
-                            <th>Valor</th>
-                        </tr>
-                    </thead>
-                </table>
+    <thead> 
+        <tr>                            
+            <th>id</th>                            
+            <th>Notícia</th>
+            <th>Revisado</th>                            
+            <th>Valor</th>
+        </tr>
+    </thead>
+</table>
+
+<div id="loading-message" style="display:none; vertical-align:middle; text-align:center; margin: 0px; padding: 0px; position: fixed; right: 0px; top: 0px; width: 100%; height: 100%; background-color: rgb(150, 150, 150); z-index: 30001; opacity: 0.45;">
+    <?php echo $this->Html->image('ajax-loader.gif', array('width' => '200px', 'height' => '200px')); ?>
+</div>
 
 <div class="actions">
 	<h3><?php echo __('Actions'); ?></h3>
