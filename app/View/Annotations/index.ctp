@@ -187,7 +187,7 @@ function showReplaceDialog(rawData){
         replaceData.push(j);
     });
     $('#replace-table').DataTable().destroy();
-    $('#replace-table').DataTable({data: replaceData, dom: 'it', 
+    $('#replace-table').DataTable({data: replaceData, dom: 'ipt', 
                                    columnDefs: [{"targets": [ 1, 2 ], "visible": false}]}); 
 }
 </script>
