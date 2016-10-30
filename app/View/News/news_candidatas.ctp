@@ -11,8 +11,10 @@
 </style>
 
 <script>
+var URL_DELETE_MANY = "<?php echo $this->Html->url(
+        array('controller' => 'news', 'action' => 'delete_many')); ?>";    
 $(document).ready(function() {
-    
+
 });
 
 function showContent(news_id){
@@ -20,6 +22,15 @@ function showContent(news_id){
         width: '90%',
         height: '600'
     });
+}
+
+function eliminarSelecionadas(){
+     
+     var selectedNews = $('#noticias-candidatas > tbody > tr > td:nth-child(2) > input:checked')
+        .toArray().map(function(e){ return $(e).data('newsId') } );
+     console.log("tipo: " + typeof(selectedNews));
+     $.post(URL_DELETE_MANY, {selectedNews: selectedNews}, function(r){console.log(r)});
+     location.reload();
 }
 </script>
 
@@ -34,6 +45,12 @@ function showContent(news_id){
 
 <div class="events index">
     <h2><?php echo __('Notícias Candidatas'); ?></h2>
+    
+    <span class="actions">
+        <a href="javascript:eliminarSelecionadas();">Eliminar selecioadas</a>
+    </span>
+    <br/> <br/>
+    
     <span>
         <p>
         <?php echo $this->Paginator->counter(array(
@@ -42,50 +59,46 @@ function showContent(news_id){
         </p>
     </span>
     
-    <table cellpadding="0" cellspacing="0" style='font-size:10pt'>
+    <table style='font-size:10pt' id="noticias-candidatas">
 	<tr>
 	    <th><?php echo $this->Paginator->sort('news_id', 'ID'); ?></th>
 	    <th> </th>
 	    <th><?php echo $this->Paginator->sort('title', 'Título'); ?></th>
 	    <th><?php echo $this->Paginator->sort('date', 'Data'); ?></th>
-	    <th class="actions">
-                <?php echo __('', ''); ?>
-                <?php echo __('', ''); ?></th>
+	    <th> </th>
 	</tr>
 	
 	<?php foreach ($news_list as $news): ?>
 	<tr id="news-row-<?php echo h($news['News']['news_id']);?>">
-            <td><?php echo h($news['News']['news_id']); ?>&nbsp;</td>
-            <td><input class="selected-news" type="checkbox" data-news-id="<?php echo h($news['News']['news_id']); ?>"> </td>
-            <td><a href="javascript:showContent(<?php echo $news['News']['news_id']?>)">
-                <?php echo h($news['News']['title']); ?>&nbsp;</a>
-            </td>
-            
-            <td><?php echo h($news['News']['date']); ?>&nbsp;</td>
+        <td><?php echo h($news['News']['news_id']); ?>&nbsp;</td>
+        <td><input class="selected-news" type="checkbox" 
+                   data-news-id="<?php echo h($news['News']['news_id']); ?>"> </td>
+                   
+        <td><a href="javascript:showContent(<?php echo $news['News']['news_id']?>)">
+            <?php echo h($news['News']['title']); ?>&nbsp;</a>
+        </td>
+        
+        <td><?php echo h($news['News']['date']); ?>&nbsp;</td>
 
-            <td class="actions">
+        <td class="actions">                       
+            <?php echo $this->Form->postLink(__('Aceitar'), array('action' => 'acceptNews',$news['News']['news_id']), null ); ?>
+        </td>    
+        <td style="display:none">
+            <div id="news-content-<?php echo $news['News']['news_id']?>" style="display:none" title="<?php echo $news['News']['title']?>">
+                <div style="float:right">
+                <span class="actions">
                 <?php echo $this->Form->postLink(__('Eliminar'), 
-                            array('action' => 'delete', $news['News']['news_id']), null, __('Eliminar noticia # %s?', $news['News']['news_id'])); ?>
-                       
+                        array('action' => 'delete', $news['News']['news_id']), null, __('Eliminar noticia # %s?', $news['News']['news_id'])); ?>
+                   
                 <?php echo $this->Form->postLink(__('Aceptar'), array('action' => 'acceptNews',$news['News']['news_id']), null ); ?>
-            </td>    
-            <td style="display:none">
-                <div id="news-content-<?php echo $news['News']['news_id']?>" style="display:none" title="<?php echo $news['News']['title']?>">
-                    <div style="float:right">
-                    <span class="actions">
-                    <?php echo $this->Form->postLink(__('Eliminar'), 
-                            array('action' => 'delete', $news['News']['news_id']), null, __('Eliminar noticia # %s?', $news['News']['news_id'])); ?>
-                       
-                    <?php echo $this->Form->postLink(__('Aceptar'), array('action' => 'acceptNews',$news['News']['news_id']), null ); ?>
-                    </span>
-                    </div>
-                    <br/>
-                    <?php echo $news['News']['content']?>
+                </span>
                 </div>
-                            
-            </td>
+                <br/>
+                <?php echo $news['News']['content']?>
+            </div>
+        </td>
 	</tr>
-        <?php endforeach; ?>
+    <?php endforeach; ?>
     </table>
     <span>
         <p>
