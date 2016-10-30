@@ -33,6 +33,8 @@ function url_to_utf8($url) {
 
 class NewsController extends AppController {
     public $components = array('Paginator');
+    
+    public $paginate = array('limit' => 50);
 
     public function beforeFilter() {
         parent::beforeFilter();
@@ -52,7 +54,6 @@ class NewsController extends AppController {
     }
     
     public function crawler(){
-    
     }
 
     private function load_sources() {
@@ -205,7 +206,9 @@ class NewsController extends AppController {
 
     public function news_candidatas(){
         $this->News->recursive = 0;
-        $conditions = array('NewsStatus.id ==' => STATUS_SEM_FILTRAR);
+        $this->Paginator->settings = array('limit' => 50);
+        $conditions = array('News.news_status_id ==' => STATUS_SEM_FILTRAR);
+        //$conditions = array();
         $this->set('news_list', $this->Paginator->paginate($conditions));
     }
     
@@ -219,18 +222,19 @@ class NewsController extends AppController {
         $initial_date = $this->format_date_for_url($this->request->data['startDate']);
         $final_date = $this->format_date_for_url($this->request->data['endDate']);
         $keywords = implode(' ', $this->request->data['keywords']);
-        $url = "https://localhost:9080/crawl.json";
         $pid = $this->crawler_exec($keywords, $initial_date, $final_date);
         $this->set('crawler_id', $pid);
     }
     
     private function crawler_exec($keywords, $initial_date, $final_date){
-        $crawler_dir = "/home/news_crawler/";
+        $crawler_dir = Configure::read('Crawler.path');
+        $scrapy_path = Configure::read('Crawler.scrapy.path');
         $crawler_name = "folha-spider";
-        $command = "cd {$crawler_dir} ; /usr/local/bin/scrapy crawl {$crawler_name} " .
+        $command = "cd {$crawler_dir} ; {$scrapy_path} crawl {$crawler_name} " .
                    " -a keywords={$keywords} " . 
                    " -a initial_date={$initial_date} " . 
                    " -a final_date={$final_date}";
+        $this->log("Runing crawler with command {$command}", 'debug');
         $process = new Process($command);
         return $process->getPid();
     }
@@ -358,6 +362,14 @@ class NewsController extends AppController {
         }
 
         return $this->redirect($this->referer());
+    }
+    
+    public function delete_many(){
+        //$this->layout = "ajax";
+        debug($this->request->data['selectedNews']);
+        $this->News->deleteAll(array(
+            'News.news_id' => $this->request->data['selectedNews'],
+            'News.news_status_id' => STATUS_SEM_FILTRAR), false );
     }
     
     public function change_status() {

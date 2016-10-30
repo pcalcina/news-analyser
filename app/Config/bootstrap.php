@@ -108,3 +108,5 @@ CakeLog::config('error', array(
 
 CakePlugin::load('DebugKit'); //Loads a single plugin named DebugKit
 
+Configure::write('Crawler.path', '/home/pablo/Programming/news-crawler');
+Configure::write('Crawler.scrapy.path', '/usr/local/bin/scrapy');
