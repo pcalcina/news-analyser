@@ -30,7 +30,7 @@ function eliminarSelecionadas(){
         .toArray().map(function(e){ return $(e).data('newsId') } );
      console.log("tipo: " + typeof(selectedNews));
      $.post(URL_DELETE_MANY, {selectedNews: selectedNews}, function(r){console.log(r)});
-     location.reload();
+     location.reload(true);
 }
 </script>
 
