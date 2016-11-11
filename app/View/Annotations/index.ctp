@@ -132,17 +132,17 @@ function fillAnnotationDetails(response){
             {
                 "targets": [ 3 ],
                 "orderable": true,
-                "searchable": true,
+                "searchable": true/*,
                 "render": function ( data, type, row, meta ) {
-                    if(type === 'sort'){
+                    if(type === 'sort' && trim(data) != ''){
                         data = removeDiacritics(data);
                     }
                     return data;
-                }
+                }*/
             },            
             {
                 "targets": [ 1 ],
-                "orderable": false,
+                "orderable": true,
                 "searchable": false,
                 "width": '90px',
                 "render": function ( data, type, row, meta ) {
