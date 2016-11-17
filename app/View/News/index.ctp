@@ -21,8 +21,8 @@ $(document).ready(function() {
        autoclose: true,
        changeMonth: true,
        changeYear: true,
-       minDate: '2013-01-01',
-       maxDate: '2014-12-01',
+       minDate: '',
+       maxDate: 'today',
        todayHighlight: true,
        regional:$.datepicker.regional['pt_BR']
     });
