@@ -175,6 +175,7 @@ class AnnotationsController extends AppController {
         
         $resultsRaw = $this->AnnotationDetail->find('all', 
             array('conditions' => array('AnnotationDetail.tag_detail_id' => $tagDetailId, 
+                                        'not' => array('Annotation.annotation_id' => null),
                                         'reviewed' => array(0, $showReviewed))));
         foreach($resultsRaw as $r){                    
             $url = Router::url(array(
